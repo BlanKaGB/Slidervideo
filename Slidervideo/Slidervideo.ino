@@ -84,6 +84,8 @@ void loop()
     key  = lcd.get_key();
 
     if (key != oldkey) {
+        char buffer[32];
+        
         // Si le bouton est appuyé
         oldkey = key;
 
