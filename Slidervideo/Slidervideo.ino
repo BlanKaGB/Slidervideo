@@ -12,7 +12,7 @@
  *	case 4 devrait arreter le moteur en cours de mouvement 
  *	afficher le deplacement en CM ou MM sur le LCD
  *	Ajouter un switch et une fonction “initialisation” le moteur cherche la butée en debut de programme.
- * 
+ * test
  */
 
 #include <Wire.h> // I2C library include
