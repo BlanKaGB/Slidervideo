@@ -53,6 +53,7 @@ void deplaceMoteur(boolean avance, const char *message)
 {
     char buffer[32];
 
+    lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(message);
     lcd.setCursor(0,1);
