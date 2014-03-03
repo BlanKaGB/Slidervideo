@@ -47,8 +47,6 @@ void setup()
     lcd.setCursor(7,1); // Place cursor row 8, 2nd line (counting from 0)
     lcd.print("ok");
     delay(500);
-    lcd.clear();
-    lcd.print("Pret ......");
 }
 
 void deplaceMoteur(boolean avance, const char *message)
@@ -77,7 +75,7 @@ void deplaceMoteur(boolean avance, const char *message)
 
 void loop()
 {
-    static int8_t oldkey = -1;
+    static int8_t oldkey = -2;
     int8_t key;
 
     // Lis la valeur du Joystick et le converti en appui bouton
@@ -101,6 +99,7 @@ void loop()
         // Pas +  
         case 0: 
             pasMoteur += parMoteurDelta;
+            lcd.clear();
             sprintf(buffer, "Pas + : %d", pasMoteur);
             lcd.print(buffer);
             delay(1000);
@@ -123,6 +122,7 @@ void loop()
             if (pasMoteur < parMoteurDelta) {
                 pasMoteur = parMoteurDelta;
             }
+            lcd.clear();
             sprintf(buffer, "Pas - : %d", pasMoteur);
             lcd.print(buffer);
             delay(1000);
@@ -131,6 +131,7 @@ void loop()
 
         // Arret
         case 4: // Stop
+            lcd.clear();
             lcd.print("Arret moteur");
             Moteur1.stop();
             moteurStatut = MoteurStatutArret;
@@ -138,6 +139,7 @@ void loop()
 
         default:
             lcd.clear();
+            lcd.print("En attente");
             break;
         }
     } else {
