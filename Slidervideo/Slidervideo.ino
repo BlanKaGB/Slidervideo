@@ -46,7 +46,7 @@ void setup()
     lcd.print("Setup");
     lcd.setCursor(7,1); // Place cursor row 8, 2nd line (counting from 0)
     lcd.print("ok");
-    delay(2000);
+    delay(500);
     lcd.clear();
     lcd.print("Pret ......");
 }
