@@ -3,6 +3,8 @@
 #include "TimerOne.h"
 #include <Deuligne.h> // LCD library include
 
+#define DELAY 500
+
 Motor moteur;
 Deuligne lcd; // lcd object declaration
 
@@ -46,7 +48,7 @@ void loop()
     int key;
     
     key = lcd.get_key();
-    if (oldKey != key || millis() - lastStep > 500) {
+    if (oldKey != key || millis() - lastStep > DELAY) {
         oldKey = key;
         switch(key) {
         case 0:
@@ -73,7 +75,7 @@ void loop()
             break;
         }
     }
-    if (millis() - lastStep > 500) {
+    if (millis() - lastStep > DELAY) {
         doStep();
     }
     lcd.setCursor(0,0);
