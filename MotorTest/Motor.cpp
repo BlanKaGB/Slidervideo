@@ -64,6 +64,8 @@ void Motor::halfStep(void)
         this->i2cCommand(MOTOR_ADDR1, 0xF0, 0xF0);
         break;
     }
+    delayMicroseconds(500);
+    this->stop();
 }
 
 void Motor::init(void)
