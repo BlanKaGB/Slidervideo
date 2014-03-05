@@ -21,8 +21,7 @@ void Motor::run(unsigned long int steps, float time)
 
 void Motor::stop(void)
 {
-    this->i2cCommand(MOTOR_ADDR1, 0x00);
-    this->i2cCommand(MOTOR_ADDR2, 0x00);
+    this->i2cCommand(MOTOR_ADDR1, 0x00, 0x00);
 }
 
 void Motor::nextStep(void)
