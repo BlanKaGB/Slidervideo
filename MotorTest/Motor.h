@@ -2,10 +2,11 @@ class Motor
 {
 public:
     Motor();
+    void init(void);
     void run(unsigned long int steps, float time);
     void stop(void);
     void nextStep(void);
-    void init(void);
+    void previousStep(void);
     unsigned char currentStep(void) { return _currentStep; };
     
 protected:

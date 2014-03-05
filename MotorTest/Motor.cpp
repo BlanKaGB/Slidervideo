@@ -31,6 +31,12 @@ void Motor::nextStep(void)
     this->halfStep();
 }
 
+void Motor::previousStep(void)
+{
+    _currentStep = (_currentStep + 7) % 8;
+    this->halfStep();
+}
+
 void Motor::halfStep(void)
 {
     switch(_currentStep) {
