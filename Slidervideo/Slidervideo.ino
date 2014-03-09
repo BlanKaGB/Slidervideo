@@ -30,6 +30,8 @@ SnootorStep Moteur1;
 int pasMoteur = 400;
 int parMoteurDelta = 400;
 MenuLCD menuLCD;
+unsigned int moteurStart = 0;
+unsigned int pasMoteurStart = 0;
 
 MoteurStatut moteurStatut = MoteurStatutArret;
 
@@ -58,9 +60,10 @@ void deplaceMoteur(boolean avance)
         sprintf(buffer, "Arriere : %d       ", pasMoteur);
     }
     menuLCD.displayMessage(buffer);
+    Serial.print("Pas moteur : ");
+    Serial.println(pasMoteur);
+    pasMoteurStart = pasMoteur;
 }
-
-unsigned int moteurStart = 0;
 
 void loop()
 {
@@ -113,8 +116,10 @@ void loop()
         SC.delay(200);
         if (Moteur1.stopped()) {
             menuLCD.clear();
-            Serial.print("Moteur :");
+            Serial.print("Moteur : ");
             Serial.println(millis() - moteurStart);
+            Serial.print("Temps par pas : ");
+            Serial.println((millis() - moteurStart) / (double)pasMoteurStart);
             moteurStart = 0;
         }
     }
