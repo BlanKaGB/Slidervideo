@@ -7,6 +7,8 @@ void MenuLCD::init()
     _deuligne.clear();
     _deuligne.backLight(true);
     _lastKey = -1;
+    _firstLine[0] = 0;
+    _secondLine[0] = 0;
 }
 
 int8_t MenuLCD::getKey()
@@ -22,12 +24,35 @@ int8_t MenuLCD::getKey()
     return key;
 }
 
-void MenuLCD::displayMessage(const char *message, unsigned int delay)
+inline void copyString(const char *origin, char *copy)
+{
+    if (!origin) {
+        copy[0] = 0;
+    } else {
+        char ii = 0;
+        
+        while (origin[ii] != 0 && ii < LINE_SIZE) {
+            copy[ii] = origin[ii];
+            ii++;
+        }
+        copy[ii] = 0;
+    }
+}
+
+void MenuLCD::displayMessage(const char *line1, const char *line2, unsigned int delay)
 {
     _deuligne.clear();
-    _deuligne.print(message);
+    _deuligne.print(line1);
+    if (line2) {
+        _deuligne.setCursor(0, 1);
+        _deuligne.print(line2);
+    }
     _messageTime = millis();
     _messageDelay = delay;
+    if (delay == 0) {
+        copyString(line1, _firstLine);
+        copyString(line2, _secondLine);
+    } 
 }
 
 void MenuLCD::loop(void)
@@ -52,14 +77,12 @@ void MenuLCD::loop(void)
             _messageTime = 0;
         }
         if (_messageTime + _messageDelay > _messageTime && _messageTime + _messageDelay < currentTime) {
-            _deuligne.clear();
-            _messageTime = 0;
-            _messageDelay = 0;
+            this->displayMessage(_firstLine, _secondLine, 0);
         }
     }
 }
 
 void MenuLCD::clear(void)
 {
-    _deuligne.clear();
+    this->displayMessage("", NULL, 0);
 }

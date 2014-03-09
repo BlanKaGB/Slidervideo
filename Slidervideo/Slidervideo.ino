@@ -43,7 +43,7 @@ void setup()
     Moteur1.init(750,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
     
     menuLCD.init();
-    menuLCD.displayMessage("Pret...", 2000);
+    menuLCD.displayMessage("Pret...", NULL, 2000);
 }
 
 void deplaceMoteur(boolean avance)
@@ -59,7 +59,7 @@ void deplaceMoteur(boolean avance)
         moteurStatut = MoteurStatutArriere;
         sprintf(buffer, "Arriere : %d       ", pasMoteur);
     }
-    menuLCD.displayMessage(buffer);
+    menuLCD.displayMessage(buffer, NULL);
     Serial.print("Pas moteur : ");
     Serial.println(pasMoteur);
     pasMoteurStart = pasMoteur;
@@ -75,7 +75,7 @@ void loop()
     case 0: 
         pasMoteur += parMoteurDelta;
         sprintf(buffer, "Pas + : %d", pasMoteur);
-        menuLCD.displayMessage(buffer, 1000);
+        menuLCD.displayMessage(buffer, NULL, 1000);
         break;
         
 
@@ -96,12 +96,13 @@ void loop()
             pasMoteur = parMoteurDelta;
         }
         sprintf(buffer, "Pas - : %d", pasMoteur);
-        menuLCD.displayMessage(buffer, 1000);
+        menuLCD.displayMessage(buffer, NULL, 1000);
         break;
 
     // Select: Arret
     case 4: // Stop
-        menuLCD.displayMessage("Arret moteur", 1000);
+        menuLCD.clear();
+        menuLCD.displayMessage("Arret moteur", NULL, 1000);
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
         break;
