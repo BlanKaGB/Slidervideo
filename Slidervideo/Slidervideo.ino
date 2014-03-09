@@ -18,7 +18,7 @@
 #include <Wire.h> // I2C library include
 #include <Deuligne.h> // LCD library include
 #include <snootor.h>
-
+#include "MenuLCD.h"
 
 typedef enum {
     MoteurStatutArret,
@@ -26,126 +26,99 @@ typedef enum {
     MoteurStatutArriere,
 } MoteurStatut;
 
-Deuligne lcd; // lcd object declaration
 SnootorStep Moteur1;
 int pasMoteur = 400;
 int parMoteurDelta = 400;
+MenuLCD menuLCD;
 
 MoteurStatut moteurStatut = MoteurStatutArret;
 
 void setup()
 {
+    Serial.begin(115200);
     Wire.begin(); // join i2c
   
     Moteur1.init(750,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
     
-    lcd.init(); // LCD init
-    lcd.clear(); // Clear Display
-    lcd.backLight(true); // Backlight ON
-    lcd.setCursor(5,0); // Place cursor row 6, 1st line (counting from 0)
-    lcd.print("Setup");
-    lcd.setCursor(7,1); // Place cursor row 8, 2nd line (counting from 0)
-    lcd.print("ok");
-    delay(500);
+    menuLCD.init();
+    menuLCD.displayMessage("Pret...", 2000);
 }
 
-void deplaceMoteur(boolean avance, const char *message)
+void deplaceMoteur(boolean avance)
 {
     char buffer[32];
 
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print(message);
-    lcd.setCursor(0,1);
-    sprintf(buffer, "Pas : %d       ", pasMoteur);
-    lcd.print(buffer);
-    delay(!Moteur1.stopped());
-    
     if (avance) {
         Moteur1.forward(pasMoteur);
         moteurStatut = MoteurStatutAvant;
+        sprintf(buffer, "Avance : %d       ", pasMoteur);
     } else {
         Moteur1.back(pasMoteur);
         moteurStatut = MoteurStatutArriere;
+        sprintf(buffer, "Arriere : %d       ", pasMoteur);
     }
-    while(!Moteur1.stopped()) // arret du moteur quand les pas sont effectués
-    SC.delay(200);
-    SC.stop();
-    lcd.clear();
+    menuLCD.displayMessage(buffer);
 }
+
+unsigned int moteurStart = 0;
 
 void loop()
 {
-    static int8_t oldkey = -2;
-    int8_t key;
-
-    // Lis la valeur du Joystick et le converti en appui bouton
-    key  = lcd.get_key();
-
-    if (key != oldkey) {
-        char buffer[32];
+    char buffer[32];
+    
+    switch(menuLCD.getKey()) {
+    
+    // Right: Pas +
+    case 0: 
+        pasMoteur += parMoteurDelta;
+        sprintf(buffer, "Pas + : %d", pasMoteur);
+        menuLCD.displayMessage(buffer, 1000);
+        break;
         
-        // Si le bouton est appuyé
-        oldkey = key;
 
-        if (key >= 0) {
-            // attention quand key est -1
-            // il n’y a pas de message
-            lcd.setCursor(0, 1);
+    // Up: Avant
+    case 1:
+        deplaceMoteur(true);
+        break;
+              
+    // Down: Arriere
+    case 2:
+        deplaceMoteur(false);
+        break;
+
+    // Left: Pas -
+    case 3: // Direction 2 en manuel
+        pasMoteur -= parMoteurDelta;
+        if (pasMoteur < parMoteurDelta) {
+            pasMoteur = parMoteurDelta;
         }
+        sprintf(buffer, "Pas - : %d", pasMoteur);
+        menuLCD.displayMessage(buffer, 1000);
+        break;
 
-        lcd.setCursor(0, 1);
-        switch(key) {
-        
-        // Pas +  
-        case 0: 
-            pasMoteur += parMoteurDelta;
-            lcd.clear();
-            sprintf(buffer, "Pas + : %d", pasMoteur);
-            lcd.print(buffer);
-            delay(1000);
-            break;
-            
+    // Select: Arret
+    case 4: // Stop
+        menuLCD.displayMessage("Arret moteur", 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
+        break;
 
-        // Avant
-        case 1:
-            deplaceMoteur(true, "AVANT  ");
-            break;
-                  
-        // Arriere
-        case 2:
-            deplaceMoteur(false, "ARRIERE");
-            break;
-
-        // Pas -
-        case 3: // Direction 2 en manuel
-            pasMoteur -= parMoteurDelta;
-            if (pasMoteur < parMoteurDelta) {
-                pasMoteur = parMoteurDelta;
-            }
-            lcd.clear();
-            sprintf(buffer, "Pas - : %d", pasMoteur);
-            lcd.print(buffer);
-            delay(1000);
-            break;
-            
-
-        // Arret
-        case 4: // Stop
-            lcd.clear();
-            lcd.print("Arret moteur");
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-            break;
-
-        default:
-            lcd.clear();
-            lcd.print("En attente");
-            break;
-        }
-    } else {
-        
+    default:
+        break;
     }
+    if (!Moteur1.stopped()) {
+        if (moteurStart == 0) {
+            moteurStart = millis();
+        }
+        SC.delay(200);
+        if (Moteur1.stopped()) {
+            menuLCD.clear();
+            Serial.print("Moteur :");
+            Serial.println(millis() - moteurStart);
+            moteurStart = 0;
+        }
+    }
+    menuLCD.loop();
 }
 
 
