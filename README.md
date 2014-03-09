@@ -7,3 +7,11 @@ Programme pour commander le mouvement d'une camera ou un appareil photo sur un a
   Deuligne (Snootlab)
   Switch (fin de course)
   
+  
+  ______________________________________________________
+  
+  MENU
+  
+  Acceuil --> Vitesse
+          --> Distance
+  
