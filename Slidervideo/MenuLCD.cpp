@@ -61,8 +61,6 @@ void MenuLCD::loop(void)
         unsigned long currentTime = millis();
         
         if (currentTime < _messageTime) {
-            Serial.println("Bordel");
-            
             // We got an overflow in millis() (every 50 days)
             // Let's recompute _messageTime with the new origin of millis()
             if (_messageTime + _messageDelay > _messageTime) {
