@@ -5,7 +5,7 @@ Programme pour commander le mouvement d'une camera ou un appareil photo sur un a
   Arduino UNO
   Motorshield (snootlab)
   Deuligne (Snootlab)
-  Switch (fin de course)
+  Switch (fin de course) input 12 - 13
   
   
   ______________________________________________________
