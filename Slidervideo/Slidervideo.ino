@@ -54,6 +54,7 @@ void deplaceMoteur(boolean avance)
         Moteur1.forward(pasMoteur);
         moteurStatut = MoteurStatutAvant;
         sprintf(buffer, "Avance : %d       ", pasMoteur);
+        sprintf(buffer, "Arriere : %d       ", pasMoteur);
     } else {
         Moteur1.back(pasMoteur);
         moteurStatut = MoteurStatutArriere;
