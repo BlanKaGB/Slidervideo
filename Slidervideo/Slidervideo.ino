@@ -72,7 +72,6 @@ void loop()
     switch(menuLCD.getKey()) {
     
     // Right: Pas +
-    case 0: 
         pasMoteur += parMoteurDelta;
         sprintf(buffer, "Pas + : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
