@@ -41,6 +41,7 @@ void setup()
     Wire.begin(); // join i2c
   
     Moteur1.init(750,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
+    Moteur1.init(700,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
     
     menuLCD.init();
     menuLCD.displayMessage("Pret...", NULL, 2000);
