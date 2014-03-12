@@ -28,7 +28,7 @@ typedef enum {
 
 SnootorStep Moteur1;
 int pasMoteur = 400;
-int parMoteurDelta = 400;
+int parMoteurDelta = 200;
 MenuLCD menuLCD;
 unsigned int moteurStart = 0;
 unsigned int pasMoteurStart = 0;
@@ -40,7 +40,6 @@ void setup()
     Serial.begin(115200);
     Wire.begin(); // join i2c
   
-    Moteur1.init(750,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
     Moteur1.init(700,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
     
     menuLCD.init();
@@ -54,12 +53,11 @@ void deplaceMoteur(boolean avance)
     if (avance) {
         Moteur1.forward(pasMoteur);
         moteurStatut = MoteurStatutAvant;
-        sprintf(buffer, "Avance : %d       ", pasMoteur);
         sprintf(buffer, "Arriere : %d       ", pasMoteur);
     } else {
         Moteur1.back(pasMoteur);
         moteurStatut = MoteurStatutArriere;
-        sprintf(buffer, "Arriere : %d       ", pasMoteur);
+        sprintf(buffer, "Avance : %d       ", pasMoteur);
     }
     menuLCD.displayMessage(buffer, NULL);
     Serial.print("Pas moteur : ");
@@ -73,25 +71,22 @@ void loop()
     
     switch(menuLCD.getKey()) {
     
+    // Up: Avant
+    case 0:
+   deplaceMoteur(true);
+        break; 
+        
+        
+
     // Right: Pas +
+    case 1:
         pasMoteur += parMoteurDelta;
         sprintf(buffer, "Pas + : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
         break;
-        
-
-    // Up: Avant
-    case 1:
-        deplaceMoteur(true);
-        break;
               
-    // Down: Arriere
-    case 2:
-        deplaceMoteur(false);
-        break;
-
     // Left: Pas -
-    case 3: // Direction 2 en manuel
+    case 2:
         pasMoteur -= parMoteurDelta;
         if (pasMoteur < parMoteurDelta) {
             pasMoteur = parMoteurDelta;
@@ -99,6 +94,12 @@ void loop()
         sprintf(buffer, "Pas - : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
         break;
+
+    // Down: Arriere
+    case 3: // Direction 2 en manuel
+        deplaceMoteur(false);
+        break;
+        
 
     // Select: Arret
     case 4: // Stop
