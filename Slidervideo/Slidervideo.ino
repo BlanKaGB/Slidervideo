@@ -40,7 +40,7 @@ void setup()
     Serial.begin(115200);
     Wire.begin(); // join i2c
   
-    Moteur1.init(700,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
+    Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
     
     menuLCD.init();
     menuLCD.displayMessage("Pret...", NULL, 2000);
@@ -73,7 +73,7 @@ void loop()
     
     // Up: Avant
     case 0:
-        deplaceMoteur(true);
+        deplaceMoteur(false);
         break; 
         
         
@@ -97,7 +97,7 @@ void loop()
 
     // Down: Arriere
     case 3: // Direction 2 en manuel
-        deplaceMoteur(false);
+        deplaceMoteur(true);
         break;
         
 
