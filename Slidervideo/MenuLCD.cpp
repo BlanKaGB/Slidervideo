@@ -1,7 +1,22 @@
 #include "MenuLCD.h"
 #include <Arduino.h>
 
-void MenuLCD::init()
+#define LCD_LENGTH 16
+
+typedef struct __MenuLCDMenuItem {
+    unsigned int identifier;
+    char title[LCD_LENGTH];
+    struct __MenuLCDMenuItem *parentMenuItem;
+    struct __MenuLCDMenuItem *nextMenuItem;
+    struct __MenuLCDMenuItem *subMenuItem;
+} MenuLCDMenuItem;
+
+MenuLCD::MenuLCD(void)
+{
+    _mainMenuItem = NULL;
+}
+
+void MenuLCD::init(void)
 {
     _deuligne.init();
     _deuligne.clear();
@@ -11,7 +26,7 @@ void MenuLCD::init()
     _secondLine[0] = 0;
 }
 
-int8_t MenuLCD::getKey()
+int8_t MenuLCD::getKey(void)
 {
     int8_t key;
 
@@ -84,3 +99,83 @@ void MenuLCD::clear(void)
 {
     this->displayMessage("", NULL, 0);
 }
+
+MenuLCDMenuItem *MenuLCD::getMainMenuItem(void)
+{
+    if (!_mainMenuItem) {
+        _mainMenuItem = addMenuItem(NULL, NULL, 0);
+    }
+    return _mainMenuItem;
+}
+
+MenuLCDMenuItem *MenuLCD::createMenuItem(const char *title, unsigned int identier)
+{
+    MenuLCDMenuItem *result;
+    
+    result = (MenuLCDMenuItem *)malloc(sizeof(MenuLCDMenuItem));
+    this->changeMenuItemTitle(result, title);
+    result->identifier = identier;
+    result->parentMenuItem = NULL;
+    result->nextMenuItem = NULL;
+    result->subMenuItem = NULL;
+    return result;
+}
+
+MenuLCDMenuItem *MenuLCD::addMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identifier)
+{
+    MenuLCDMenuItem *result = NULL;
+    
+    if (menuItem != _mainMenuItem) {
+        result = this->createMenuItem(title, identifier);
+        result->nextMenuItem = menuItem->nextMenuItem;
+        menuItem->nextMenuItem = result;
+        result->parentMenuItem = menuItem->parentMenuItem;
+    }
+    return result;
+}
+
+MenuLCDMenuItem *MenuLCD::addSubMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identifier)
+{
+    MenuLCDMenuItem *result;
+    
+    if (menuItem->subMenuItem) {
+        menuItem = menuItem->subMenuItem;
+        while (menuItem->nextMenuItem != NULL) {
+            menuItem = menuItem->nextMenuItem;
+        }
+        result = this->addMenuItem(menuItem, title, identifier);
+    } else {
+        result = this->createMenuItem(title, identifier);
+        result->parentMenuItem = menuItem;
+        menuItem->subMenuItem = result;
+    }
+    return result;
+}
+
+void MenuLCD::freeMenuItem(MenuLCDMenuItem *menuItem)
+{
+    while (menuItem) {
+        MenuLCDMenuItem *nextMenuItem;
+        
+        freeMenuItem(menuItem->subMenuItem);
+        nextMenuItem = menuItem->nextMenuItem;
+        free(menuItem);
+        menuItem = nextMenuItem;
+    }
+}
+
+void MenuLCD::changeMenuItemTitle(MenuLCDMenuItem *menuItem, const char *title)
+{
+    int ii = 0;
+    
+    if (title) {
+        int count = strlen(title);
+        
+        while (ii < count && ii < LCD_LENGTH) {
+            menuItem->title[ii] = title[ii];
+            ii++;
+        }
+    }
+    menuItem->title[ii] = 0;
+}
+
