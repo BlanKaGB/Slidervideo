@@ -73,7 +73,7 @@ void loop()
     
     // Up: Avant
     case 0:
-   deplaceMoteur(true);
+        deplaceMoteur(true);
         break; 
         
         
