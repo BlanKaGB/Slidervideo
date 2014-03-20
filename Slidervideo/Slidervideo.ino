@@ -28,7 +28,7 @@ typedef enum {
 
 SnootorStep Moteur1;
 int pasMoteur = 400;
-int parMoteurDelta = 200;
+int parMoteurDelta = 1000;
 MenuLCD menuLCD;
 unsigned int moteurStart = 0;
 unsigned int pasMoteurStart = 0;
@@ -73,7 +73,7 @@ void loop()
     
     // Up: Avant
     case 0:
-        deplaceMoteur(false);
+        deplaceMoteur(true);
         break; 
         
         
@@ -97,7 +97,7 @@ void loop()
 
     // Down: Arriere
     case 3: // Direction 2 en manuel
-        deplaceMoteur(true);
+        deplaceMoteur(false);
         break;
         
 
