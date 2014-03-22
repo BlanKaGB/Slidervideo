@@ -26,9 +26,12 @@ typedef enum {
     MoteurStatutArriere,
 } MoteurStatut;
 
+#define FDC_HOME_PIN    13
+#define FDC_END_PIN     12
+
 SnootorStep Moteur1;
 int pasMoteur = 400;
-int parMoteurDelta = 200;
+int parMoteurDelta = 1000;
 MenuLCD menuLCD;
 unsigned int moteurStart = 0;
 unsigned int pasMoteurStart = 0;
@@ -40,7 +43,10 @@ void setup()
     Serial.begin(115200);
     Wire.begin(); // join i2c
   
-    Moteur1.init(700,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour au demi pas
+    Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
+    
+    pinMode(FDC_HOME_PIN,INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
+    pinMode(FDC_END_PIN,INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
     
     menuLCD.init();
     menuLCD.displayMessage("Pret...", NULL, 2000);
@@ -66,8 +72,25 @@ void deplaceMoteur(boolean avance)
 }
 
 void loop()
-{
+{       
     char buffer[32];
+    
+    if (moteurStatut != MoteurStatutArret) {
+        // Stop la course du moteur avec les butées
+        // seulement si le moteur est en train de tourner...
+        if (digitalRead(FDC_HOME_PIN) == LOW) {
+            menuLCD.clear();
+            menuLCD.displayMessage("Home", NULL, 1000);
+            Moteur1.stop();
+            moteurStatut = MoteurStatutArret;
+        }
+        if (digitalRead(FDC_END_PIN) == LOW) {
+            menuLCD.clear();
+            menuLCD.displayMessage("Fin de course", NULL, 1000);
+            Moteur1.stop();
+            moteurStatut = MoteurStatutArret;
+        }
+    }
     
     switch(menuLCD.getKey()) {
     
@@ -75,9 +98,12 @@ void loop()
     case 0:
         deplaceMoteur(true);
         break; 
-        
-        
 
+    // Down: Arriere
+    case 3: // Direction 2 en manuel
+        deplaceMoteur(false);
+        break;
+            
     // Right: Pas +
     case 1:
         pasMoteur += parMoteurDelta;
@@ -95,12 +121,6 @@ void loop()
         menuLCD.displayMessage(buffer, NULL, 1000);
         break;
 
-    // Down: Arriere
-    case 3: // Direction 2 en manuel
-        deplaceMoteur(false);
-        break;
-        
-
     // Select: Arret
     case 4: // Stop
         menuLCD.clear();
@@ -108,6 +128,7 @@ void loop()
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
         break;
+
 
     default:
         break;
@@ -128,6 +149,4 @@ void loop()
     }
     menuLCD.loop();
 }
-
-
 
