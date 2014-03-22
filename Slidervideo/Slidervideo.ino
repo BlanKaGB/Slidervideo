@@ -75,17 +75,21 @@ void loop()
 {       
     char buffer[32];
     
-    if (digitalRead(FDC_HOME_PIN) == LOW) {
-        menuLCD.clear();
-        menuLCD.displayMessage("Home", NULL, 1000);
-        Moteur1.stop();
-        moteurStatut = MoteurStatutArret;
-    }
-    if (digitalRead(FDC_END_PIN) == LOW) {
-        menuLCD.clear();
-        menuLCD.displayMessage("Fin de course", NULL, 1000);
-        Moteur1.stop();
-        moteurStatut = MoteurStatutArret;
+    if (moteurStatut != MoteurStatutArret) {
+        // Stop la course du moteur avec les butées
+        // seulement si le moteur est en train de tourner...
+        if (digitalRead(FDC_HOME_PIN) == LOW) {
+            menuLCD.clear();
+            menuLCD.displayMessage("Home", NULL, 1000);
+            Moteur1.stop();
+            moteurStatut = MoteurStatutArret;
+        }
+        if (digitalRead(FDC_END_PIN) == LOW) {
+            menuLCD.clear();
+            menuLCD.displayMessage("Fin de course", NULL, 1000);
+            Moteur1.stop();
+            moteurStatut = MoteurStatutArret;
+        }
     }
     
     switch(menuLCD.getKey()) {
