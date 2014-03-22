@@ -70,29 +70,26 @@ void deplaceMoteur(boolean avance)
     pasMoteurStart = pasMoteur;
 }
 
-void loop(){
+void loop()
 {       
     int fdc_home = digitalRead(13);
-    Serial.println(fdc_home);
-       if (fdc_home == LOW) {
-            menuLCD.clear();
-            menuLCD.displayMessage("Home", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-          } 
-        }
-{       
     int fdc = digitalRead(12);
-    Serial.println(fdc);
-       if (fdc == LOW) {
-            menuLCD.clear();
-            menuLCD.displayMessage("Fin de course", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-          }
-        }
-{
     char buffer[32];
+    
+    Serial.println(fdc_home);
+    if (fdc_home == LOW) {
+        menuLCD.clear();
+        menuLCD.displayMessage("Home", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
+    }
+    Serial.println(fdc);
+    if (fdc == LOW) {
+        menuLCD.clear();
+        menuLCD.displayMessage("Fin de course", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
+    }
     
     switch(menuLCD.getKey()) {
     
@@ -151,6 +148,5 @@ void loop(){
         }
     }
     menuLCD.loop();
-}
 }
 
