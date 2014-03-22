@@ -98,6 +98,11 @@ void loop()
     case 0:
         deplaceMoteur(true);
         break; 
+
+    // Down: Arriere
+    case 3: // Direction 2 en manuel
+        deplaceMoteur(false);
+        break;
             
     // Right: Pas +
     case 1:
@@ -115,12 +120,6 @@ void loop()
         sprintf(buffer, "Pas - : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
         break;
-
-    // Down: Arriere
-    case 3: // Direction 2 en manuel
-        deplaceMoteur(false);
-        break;
-        
 
     // Select: Arret
     case 4: // Stop
