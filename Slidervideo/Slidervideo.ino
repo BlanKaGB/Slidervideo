@@ -50,6 +50,12 @@ void setup()
     
     menuLCD.init();
     menuLCD.displayMessage("Pret...", NULL, 2000);
+    Serial.print(FDC_HOME_PIN);
+    Serial.print(" " );
+    Serial.println((digitalRead(FDC_HOME_PIN) == LOW)?"LOW":"HIGH");
+    Serial.print(FDC_END_PIN);
+    Serial.print(" " );
+    Serial.println((digitalRead(FDC_END_PIN) == LOW)?"LOW":"HIGH");
 }
 
 void deplaceMoteur(int pas, boolean avance)
