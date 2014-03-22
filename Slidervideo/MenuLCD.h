@@ -13,6 +13,7 @@ public:
     void displayMessage(const char *line1, const char *line2 = NULL, unsigned int delay = 0);
     void loop(void);
     void clear(void);
+    unsigned int selectedMenuIdentifer(void);
     MenuLCDMenuItem *getMainMenuItem(void);
     MenuLCDMenuItem *addMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identifier);
     MenuLCDMenuItem *addSubMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identier);
@@ -26,7 +27,11 @@ private:
     char                 _firstLine[LINE_SIZE + 1];
     char                 _secondLine[LINE_SIZE + 1];
     MenuLCDMenuItem      *_mainMenuItem;
+    MenuLCDMenuItem      *_firstLineMenuItem;
+    int                  _selectedLine;
     
     MenuLCDMenuItem *createMenuItem(const char *title, unsigned int identifier);
     void freeMenuItem(MenuLCDMenuItem *menuItem);
+    void selectMenuItem(MenuLCDMenuItem *menuItem);
+    void updateMenu(void);
 };

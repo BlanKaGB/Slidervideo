@@ -1,19 +1,33 @@
 #include "MenuLCD.h"
 #include <Arduino.h>
 
-#define LCD_LENGTH 16
-
 typedef struct __MenuLCDMenuItem {
     unsigned int identifier;
-    char title[LCD_LENGTH];
+    char title[LINE_SIZE];
     struct __MenuLCDMenuItem *parentMenuItem;
     struct __MenuLCDMenuItem *nextMenuItem;
     struct __MenuLCDMenuItem *subMenuItem;
 } MenuLCDMenuItem;
 
+inline void copyString(const char *origin, char *copy)
+{
+    if (!origin) {
+        copy[0] = 0;
+    } else {
+        char ii = 0;
+        
+        while (origin[ii] != 0 && ii < LINE_SIZE) {
+            copy[ii] = origin[ii];
+            ii++;
+        }
+        copy[ii] = 0;
+    }
+}
+
 MenuLCD::MenuLCD(void)
 {
     _mainMenuItem = NULL;
+    _firstLineMenuItem = NULL;
 }
 
 void MenuLCD::init(void)
@@ -39,19 +53,45 @@ int8_t MenuLCD::getKey(void)
     return key;
 }
 
-inline void copyString(const char *origin, char *copy)
+unsigned int MenuLCD::selectedMenuIdentifer(void)
 {
-    if (!origin) {
-        copy[0] = 0;
-    } else {
-        char ii = 0;
+    unsigned int result = 0;
+    int8_t key = this->getKey();
+    
+    if (key != -1 && _firstLineMenuItem == NULL) {
+        this->selectMenuItem(_mainMenuItem->subMenuItem);
+    } else if (key == 0) { // up
         
-        while (origin[ii] != 0 && ii < LINE_SIZE) {
-            copy[ii] = origin[ii];
-            ii++;
-        }
-        copy[ii] = 0;
     }
+}
+
+void MenuLCD::selectMenuItem(MenuLCDMenuItem *menuItem)
+{
+    _firstLineMenuItem = menuItem;
+    _selectedLine = 0;
+    this->updateMenu();
+}
+
+void MenuLCD::updateMenu(void)
+{
+    char line1[LINE_SIZE];
+    char line2[LINE_SIZE];
+    
+    line1[0] = 0;
+    line2[0] = 0;
+    if (_firstLineMenuItem) {
+        copyString(_firstLineMenuItem->title, line1);
+        if (_firstLineMenuItem->subMenuItem != NULL) {
+            line1[LINE_SIZE - 1] = '>';
+        }
+        if (_firstLineMenuItem->nextMenuItem) {
+            copyString(_firstLineMenuItem->nextMenuItem->title, line2);
+            if (_firstLineMenuItem->nextMenuItem->subMenuItem != NULL) {
+                line2[LINE_SIZE - 1] = '>';
+            }
+        }
+    }
+    this->displayMessage(line1, line2, 0);
 }
 
 void MenuLCD::displayMessage(const char *line1, const char *line2, unsigned int delay)
@@ -171,7 +211,7 @@ void MenuLCD::changeMenuItemTitle(MenuLCDMenuItem *menuItem, const char *title)
     if (title) {
         int count = strlen(title);
         
-        while (ii < count && ii < LCD_LENGTH) {
+        while (ii < count && ii < LINE_SIZE) {
             menuItem->title[ii] = title[ii];
             ii++;
         }
