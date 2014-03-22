@@ -96,12 +96,20 @@ void loop()
     
     // Up: Avant
     case 0:
-        deplaceMoteur(true);
+        if (digitalRead(FDC_HOME_PIN) == LOW) {
+            menuLCD.displayMessage("Home", NULL, 1000);
+        } else {
+            deplaceMoteur(true);
+        }
         break; 
 
     // Down: Arriere
     case 3: // Direction 2 en manuel
-        deplaceMoteur(false);
+        if (digitalRead(FDC_END_PIN) == LOW) {
+            menuLCD.displayMessage("Fin de course", NULL, 1000);
+        } else {
+            deplaceMoteur(false);
+        }
         break;
             
     // Right: Pas +
