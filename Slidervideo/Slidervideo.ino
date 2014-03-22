@@ -79,12 +79,14 @@ void loop()
         // Stop la course du moteur avec les butées
         // seulement si le moteur est en train de tourner...
         if (digitalRead(FDC_HOME_PIN) == LOW) {
+            Serial.println("Stop: FDC Home");
             menuLCD.clear();
             menuLCD.displayMessage("Home", NULL, 1000);
             Moteur1.stop();
             moteurStatut = MoteurStatutArret;
         }
         if (digitalRead(FDC_END_PIN) == LOW) {
+            Serial.println("Stop: FDC End");
             menuLCD.clear();
             menuLCD.displayMessage("Fin de course", NULL, 1000);
             Moteur1.stop();
