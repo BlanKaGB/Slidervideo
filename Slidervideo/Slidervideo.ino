@@ -58,11 +58,11 @@ void deplaceMoteur(int pas, boolean avance)
 
     if (avance) {
         Moteur1.forward(pas);
-        moteurStatut = MoteurStatutAvant;
+        moteurStatut = MoteurStatutArriere;
         sprintf(buffer, "Arriere : %d       ", pas);
     } else {
         Moteur1.back(pas);
-        moteurStatut = MoteurStatutArriere;
+        moteurStatut = MoteurStatutAvant;
         sprintf(buffer, "Avance : %d       ", pas);
     }
     menuLCD.displayMessage(buffer, NULL);
