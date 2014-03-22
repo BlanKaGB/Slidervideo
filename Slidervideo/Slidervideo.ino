@@ -52,22 +52,22 @@ void setup()
     menuLCD.displayMessage("Pret...", NULL, 2000);
 }
 
-void deplaceMoteur(boolean avance)
+void deplaceMoteur(int pas, boolean avance)
 {
     char buffer[32];
 
     if (avance) {
-        Moteur1.forward(pasMoteur);
+        Moteur1.forward(pas);
         moteurStatut = MoteurStatutAvant;
-        sprintf(buffer, "Arriere : %d       ", pasMoteur);
+        sprintf(buffer, "Arriere : %d       ", pas);
     } else {
-        Moteur1.back(pasMoteur);
+        Moteur1.back(pas);
         moteurStatut = MoteurStatutArriere;
-        sprintf(buffer, "Avance : %d       ", pasMoteur);
+        sprintf(buffer, "Avance : %d       ", pas);
     }
     menuLCD.displayMessage(buffer, NULL);
     Serial.print("Pas moteur : ");
-    Serial.println(pasMoteur);
+    Serial.println(pas);
     pasMoteurStart = pasMoteur;
 }
 
@@ -99,7 +99,7 @@ void loop()
         if (digitalRead(FDC_HOME_PIN) == LOW) {
             menuLCD.displayMessage("Home", NULL, 1000);
         } else {
-            deplaceMoteur(true);
+            deplaceMoteur(pasMoteur, true);
         }
         break; 
 
@@ -108,7 +108,7 @@ void loop()
         if (digitalRead(FDC_END_PIN) == LOW) {
             menuLCD.displayMessage("Fin de course", NULL, 1000);
         } else {
-            deplaceMoteur(false);
+            deplaceMoteur(pasMoteur, false);
         }
         break;
             
