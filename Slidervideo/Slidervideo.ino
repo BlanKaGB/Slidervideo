@@ -26,11 +26,12 @@ typedef enum {
     MoteurStatutArriere,
 } MoteurStatut;
 
+#define FDC_HOME_PIN    13
+#define FDC_END_PIN     12
+
 SnootorStep Moteur1;
 int pasMoteur = 400;
 int parMoteurDelta = 1000;
-int fdc = 13;               // delaration de l'entree pin 13 "fdc_home"
-int fdc_home = 12;          // delaration de l'entree pin 12 "fdc"
 MenuLCD menuLCD;
 unsigned int moteurStart = 0;
 unsigned int pasMoteurStart = 0;
@@ -44,8 +45,8 @@ void setup()
   
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
     
-    pinMode(13,INPUT_PULLUP); // declare la pin digital 13 en entree "fdc_home"
-    pinMode(12,INPUT_PULLUP); // declare la pin digital 13 en entree "fdc"
+    pinMode(FDC_HOME_PIN,INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
+    pinMode(FDC_END_PIN,INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
     
     menuLCD.init();
     menuLCD.displayMessage("Pret...", NULL, 2000);
@@ -72,19 +73,15 @@ void deplaceMoteur(boolean avance)
 
 void loop()
 {       
-    int fdc_home = digitalRead(13);
-    int fdc = digitalRead(12);
     char buffer[32];
     
-    Serial.println(fdc_home);
-    if (fdc_home == LOW) {
+    if (digitalRead(FDC_HOME_PIN) == LOW) {
         menuLCD.clear();
         menuLCD.displayMessage("Home", NULL, 1000);
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
     }
-    Serial.println(fdc);
-    if (fdc == LOW) {
+    if (digitalRead(FDC_END_PIN) == LOW) {
         menuLCD.clear();
         menuLCD.displayMessage("Fin de course", NULL, 1000);
         Moteur1.stop();
