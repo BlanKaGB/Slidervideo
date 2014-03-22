@@ -96,7 +96,7 @@ void loop()
     
     switch(menuLCD.getKey()) {
     
-    // Up: Avant
+    // Right: Arriere
     case 0:
         if (digitalRead(FDC_HOME_PIN) == LOW) {
             menuLCD.displayMessage("Home", NULL, 1000);
@@ -105,7 +105,7 @@ void loop()
         }
         break; 
 
-    // Down: Arriere
+    // Left: Avant
     case 3: // Direction 2 en manuel
         if (digitalRead(FDC_END_PIN) == LOW) {
             menuLCD.displayMessage("Fin de course", NULL, 1000);
@@ -114,14 +114,14 @@ void loop()
         }
         break;
             
-    // Right: Pas +
+    // Up: Pas +
     case 1:
         pasMoteur += parMoteurDelta;
         sprintf(buffer, "Pas + : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
         break;
               
-    // Left: Pas -
+    // Down: Pas -
     case 2:
         pasMoteur -= parMoteurDelta;
         if (pasMoteur < parMoteurDelta) {
