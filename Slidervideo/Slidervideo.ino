@@ -29,13 +29,14 @@ typedef enum {
 #define FDC_HOME_PIN    13
 #define FDC_END_PIN     12
 #define FDC_ACTIVE      HIGH
+#define MAX_PAS         0xFFFFFFFF
 
 SnootorStep Moteur1;
-int pasMoteur = 400;
-int parMoteurDelta = 1000;
+uint32_t pasMoteur = 400;
+uint32_t parMoteurDelta = 1000;
 MenuLCD menuLCD;
-unsigned int moteurStart = 0;
-unsigned int pasMoteurStart = 0;
+uint32_t moteurStart = 0;
+uint32_t pasMoteurStart = 0;
 
 MoteurStatut moteurStatut = MoteurStatutArret;
 
@@ -49,8 +50,8 @@ void setup()
   
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
     
-    pinMode(FDC_HOME_PIN,INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
-    pinMode(FDC_END_PIN,INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
+    pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
+    pinMode(FDC_END_PIN, INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
     
     menuLCD.init();
     
@@ -67,32 +68,53 @@ void setup()
     Serial.println("--");
     menuLCD.debugPrint();
 
-    menuLCD.displayMessage("Pret...", NULL, 2000);
     Serial.print(FDC_HOME_PIN);
     Serial.print(" " );
     Serial.println((digitalRead(FDC_HOME_PIN) == LOW)?"LOW":"HIGH");
     Serial.print(FDC_END_PIN);
     Serial.print(" " );
     Serial.println((digitalRead(FDC_END_PIN) == LOW)?"LOW":"HIGH");
+    
+    // retour en arriere avec le nombre de pas max possible
+    // pour atteindre le debut de course
+    deplaceMoteur(MAX_PAS, false);
 }
 
-void deplaceMoteur(int pas, boolean avance)
+void deplaceMoteur(uint32_t pas, boolean avance)
 {
     char buffer[32];
 
-    if (avance) {
-        Moteur1.back(pas);
-        moteurStatut = MoteurStatutAvant;
-        sprintf(buffer, "Avance : %d       ", pas);
+    if (avance && digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
+        menuLCD.displayMessage("Fin de course", NULL, 1000);
+        Serial.print("Fin de course : butee ");
+        Serial.println(FDC_END_PIN);
+    } else if (!avance && digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
+        menuLCD.displayMessage("Debut de course", NULL, 1000);
+        Serial.print("Debut de course : butee ");
+        Serial.println(FDC_HOME_PIN);
     } else {
-        Moteur1.forward(pas);
-        moteurStatut = MoteurStatutArriere;
-        sprintf(buffer, "Arriere : %d       ", pas);
+        if (avance) {
+            Moteur1.back(pas);
+            moteurStatut = MoteurStatutAvant;
+            if (pas == MAX_PAS) {
+                sprintf(buffer, "Avance : MAX");
+            } else {
+                sprintf(buffer, "Avance : %u       ", pas);
+            }
+        } else {
+            Moteur1.forward(pas);
+            moteurStatut = MoteurStatutArriere;
+            if (pas == MAX_PAS) {
+                sprintf(buffer, "Arriere : MAX");
+            } else {
+                sprintf(buffer, "Arriere : %u       ", pas);
+            }
+        }
+        menuLCD.displayMessage(buffer, NULL);
+        Serial.print("Pas moteur : ");
+        Serial.println(pas);
+        pasMoteurStart = pasMoteur;
     }
-    menuLCD.displayMessage(buffer, NULL);
-    Serial.print("Pas moteur : ");
-    Serial.println(pas);
-    pasMoteurStart = pasMoteur;
 }
 
 void loop()
@@ -106,47 +128,33 @@ void loop()
         Serial.println(identifier);
     }
     
-    if (moteurStatut != MoteurStatutArret) {
-        // Stop la course du moteur avec les butées
-        // seulement si le moteur est en train de tourner...
-        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
-            Serial.println("Stop: FDC Home");
-            menuLCD.clear();
-            menuLCD.displayMessage("Home", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-        }
-        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
-            Serial.println("Stop: FDC End");
-            menuLCD.clear();
-            menuLCD.displayMessage("Fin de course", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-        }
+    if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
+        // Si on revient en arriere et que le capteur de debut s'active, on arrete
+        Serial.println("Stop: FDC Home");
+        menuLCD.clear();
+        menuLCD.displayMessage("Debut de course", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
+    }
+    if (digitalRead(FDC_END_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutAvant) {
+        // Si on part en avant et que le capteur de fin s'active, on arrete
+        Serial.println("Stop: FDC End");
+        menuLCD.clear();
+        menuLCD.displayMessage("Fin de course", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
     }
     
     switch(7) {
     
     // Right: Arriere
     case 0:
-        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
-            menuLCD.displayMessage("Debut de course", NULL, 1000);
-            Serial.print("Debut de course : butee ");
-            Serial.println(FDC_HOME_PIN);
-        } else {
-            deplaceMoteur(pasMoteur, false);
-        }
+        deplaceMoteur(pasMoteur, false);
         break; 
 
     // Left: Avant
     case 3: // Direction 2 en manuel
-        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
-            menuLCD.displayMessage("Fin de course", NULL, 1000);
-            Serial.print("Fin de course : butee ");
-            Serial.println(FDC_END_PIN);
-        } else {
-            deplaceMoteur(pasMoteur, true);
-        }
+        deplaceMoteur(pasMoteur, true);
         break;
             
     // Up: Pas +
@@ -168,10 +176,12 @@ void loop()
 
     // Select: Arret
     case 4: // Stop
-        menuLCD.clear();
-        menuLCD.displayMessage("Arret moteur", NULL, 1000);
-        Moteur1.stop();
-        moteurStatut = MoteurStatutArret;
+        if (moteurStatut != MoteurStatutArret) {
+            menuLCD.clear();
+            menuLCD.displayMessage("Arret moteur", NULL, 1000);
+            Moteur1.stop();
+            moteurStatut = MoteurStatutArret;
+        }
         break;
 
 
