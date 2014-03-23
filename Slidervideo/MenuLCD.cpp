@@ -1,5 +1,6 @@
 #include "MenuLCD.h"
-#include <Arduino.h>
+
+#define EMPTY_LINE "                "
 
 typedef struct __MenuLCDMenuItem {
     unsigned int identifier;
@@ -77,7 +78,7 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
     } else if (key == 1) { // up
         if (_selectedLine > 0) {
             _selectedLine--;
-            this->updateMenu();
+            _deuligne.setCursor(0, _selectedLine);
         } else {
             MenuLCDMenuItem *previous = previousMenuItem(_firstLineMenuItem);
             
@@ -89,7 +90,7 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
     } else if (key == 2) { //down
         if (_selectedLine < 1) {
             _selectedLine++;
-            this->updateMenu();
+            _deuligne.setCursor(0, _selectedLine);
         } else {
             MenuLCDMenuItem *next = _firstLineMenuItem->nextMenuItem;
             
@@ -141,11 +142,11 @@ void MenuLCD::selectMenuItem(MenuLCDMenuItem *menuItem)
 
 void MenuLCD::updateMenu(void)
 {
-    char line1[LINE_SIZE];
-    char line2[LINE_SIZE];
+    char line1[LINE_SIZE + 1];
+    char line2[LINE_SIZE + 1];
     
-    line1[0] = 0;
-    line2[0] = 0;
+    copyString(EMPTY_LINE, line1);
+    copyString(EMPTY_LINE, line2);
     if (_firstLineMenuItem) {
         copyString(_firstLineMenuItem->title, line1);
         if (_firstLineMenuItem->subMenuItem != NULL) {
@@ -158,14 +159,18 @@ void MenuLCD::updateMenu(void)
             }
         }
     }
-    this->displayMessage(line1, line2, 0);
+    this->displayMessage(line1, line2, 0, false);
     _deuligne.blink();
     _deuligne.setCursor(0, _selectedLine);
 }
 
-void MenuLCD::displayMessage(const char *line1, const char *line2, unsigned int delay)
+void MenuLCD::displayMessage(const char *line1, const char *line2, unsigned int delay, boolean shouldClearScreen)
 {
-    _deuligne.clear();
+    if (shouldClearScreen) {
+        _deuligne.clear();
+    } else {
+        _deuligne.setCursor(0, 0);
+    }
     _deuligne.print(line1);
     if (line2) {
         _deuligne.setCursor(0, 1);

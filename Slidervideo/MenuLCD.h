@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Deuligne.h> // LCD library include
 
 #define LINE_SIZE 16
@@ -10,7 +11,7 @@ public:
     MenuLCD(void);
     void init(void);
     int8_t getKey(void);
-    void displayMessage(const char *line1, const char *line2 = NULL, unsigned int delay = 0);
+    void displayMessage(const char *line1, const char *line2 = NULL, unsigned int delay = 0, boolean shouldClearScreen = true);
     void loop(void);
     void clear(void);
     MenuLCDMenuItem *lastSelectedMenuItem(void);
