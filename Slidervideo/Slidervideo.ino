@@ -29,13 +29,14 @@ typedef enum {
 #define FDC_HOME_PIN    13
 #define FDC_END_PIN     12
 #define FDC_ACTIVE      HIGH
+#define MAX_PAS         0xFFFFFFFF
 
 SnootorStep Moteur1;
 uint32_t pasMoteur = 400;
 uint32_t parMoteurDelta = 1000;
 MenuLCD menuLCD;
-unsigned int moteurStart = 0;
-unsigned int pasMoteurStart = 0;
+uint32_t moteurStart = 0;
+uint32_t pasMoteurStart = 0;
 
 MoteurStatut moteurStatut = MoteurStatutArret;
 
@@ -56,6 +57,10 @@ void setup()
     Serial.print(FDC_END_PIN);
     Serial.print(" " );
     Serial.println((digitalRead(FDC_END_PIN) == LOW)?"LOW":"HIGH");
+    
+    // retour en arriere avec le nombre de pas max possible
+    // pour atteindre le debut de course
+    deplaceMoteur(MAX_PAS, false);
 }
 
 void deplaceMoteur(uint32_t pas, boolean avance)
@@ -74,11 +79,19 @@ void deplaceMoteur(uint32_t pas, boolean avance)
         if (avance) {
             Moteur1.back(pas);
             moteurStatut = MoteurStatutAvant;
-            sprintf(buffer, "Avance : %d       ", pas);
+            if (pas == MAX_PAS) {
+                sprintf(buffer, "Avance : MAX");
+            } else {
+                sprintf(buffer, "Avance : %ud       ", pas);
+            }
         } else {
             Moteur1.forward(pas);
             moteurStatut = MoteurStatutArriere;
-            sprintf(buffer, "Arriere : %d       ", pas);
+            if (pas == MAX_PAS) {
+                sprintf(buffer, "Arriere : MAX");
+            } else {
+                sprintf(buffer, "Arriere : %ud       ", pas);
+            }
         }
         menuLCD.displayMessage(buffer, NULL);
         Serial.print("Pas moteur : ");
