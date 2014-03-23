@@ -28,6 +28,7 @@ typedef enum {
 
 #define FDC_HOME_PIN    13
 #define FDC_END_PIN     12
+#define FDC_ACTIVE      HIGH
 
 SnootorStep Moteur1;
 int pasMoteur = 400;
@@ -64,24 +65,32 @@ void setup()
     menuLCD.addSubMenuItem(mainMenu, "Titre 5", 5);
     Serial.println("--");
     menuLCD.debugPrint();
+
+    menuLCD.displayMessage("Pret...", NULL, 2000);
+    Serial.print(FDC_HOME_PIN);
+    Serial.print(" " );
+    Serial.println((digitalRead(FDC_HOME_PIN) == LOW)?"LOW":"HIGH");
+    Serial.print(FDC_END_PIN);
+    Serial.print(" " );
+    Serial.println((digitalRead(FDC_END_PIN) == LOW)?"LOW":"HIGH");
 }
 
-void deplaceMoteur(boolean avance)
+void deplaceMoteur(int pas, boolean avance)
 {
     char buffer[32];
 
     if (avance) {
-        Moteur1.forward(pasMoteur);
+        Moteur1.back(pas);
         moteurStatut = MoteurStatutAvant;
-        sprintf(buffer, "Arriere : %d       ", pasMoteur);
+        sprintf(buffer, "Avance : %d       ", pas);
     } else {
-        Moteur1.back(pasMoteur);
+        Moteur1.forward(pas);
         moteurStatut = MoteurStatutArriere;
-        sprintf(buffer, "Avance : %d       ", pasMoteur);
+        sprintf(buffer, "Arriere : %d       ", pas);
     }
     menuLCD.displayMessage(buffer, NULL);
     Serial.print("Pas moteur : ");
-    Serial.println(pasMoteur);
+    Serial.println(pas);
     pasMoteurStart = pasMoteur;
 }
 
@@ -99,13 +108,15 @@ void loop()
     if (moteurStatut != MoteurStatutArret) {
         // Stop la course du moteur avec les butées
         // seulement si le moteur est en train de tourner...
-        if (digitalRead(FDC_HOME_PIN) == LOW) {
+        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
+            Serial.println("Stop: FDC Home");
             menuLCD.clear();
             menuLCD.displayMessage("Home", NULL, 1000);
             Moteur1.stop();
             moteurStatut = MoteurStatutArret;
         }
-        if (digitalRead(FDC_END_PIN) == LOW) {
+        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
+            Serial.println("Stop: FDC End");
             menuLCD.clear();
             menuLCD.displayMessage("Fin de course", NULL, 1000);
             Moteur1.stop();
@@ -115,32 +126,36 @@ void loop()
     
     switch(7) {
     
-    // Up: Avant
+    // Right: Arriere
     case 0:
-        if (digitalRead(FDC_HOME_PIN) == LOW) {
-            menuLCD.displayMessage("Home", NULL, 1000);
+        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
+            menuLCD.displayMessage("Debut de course", NULL, 1000);
+            Serial.print("Debut de course : butee ");
+            Serial.println(FDC_HOME_PIN);
         } else {
-            deplaceMoteur(true);
+            deplaceMoteur(pasMoteur, false);
         }
         break; 
 
-    // Down: Arriere
+    // Left: Avant
     case 3: // Direction 2 en manuel
-        if (digitalRead(FDC_END_PIN) == LOW) {
+        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
             menuLCD.displayMessage("Fin de course", NULL, 1000);
+            Serial.print("Fin de course : butee ");
+            Serial.println(FDC_END_PIN);
         } else {
-            deplaceMoteur(false);
+            deplaceMoteur(pasMoteur, true);
         }
         break;
             
-    // Right: Pas +
+    // Up: Pas +
     case 1:
         pasMoteur += parMoteurDelta;
         sprintf(buffer, "Pas + : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
         break;
               
-    // Left: Pas -
+    // Down: Pas -
     case 2:
         pasMoteur -= parMoteurDelta;
         if (pasMoteur < parMoteurDelta) {
