@@ -28,6 +28,7 @@ typedef enum {
 
 #define FDC_HOME_PIN    13
 #define FDC_END_PIN     12
+#define FDC_ACTIVE      HIGH
 
 SnootorStep Moteur1;
 int pasMoteur = 400;
@@ -84,14 +85,14 @@ void loop()
     if (moteurStatut != MoteurStatutArret) {
         // Stop la course du moteur avec les butées
         // seulement si le moteur est en train de tourner...
-        if (digitalRead(FDC_HOME_PIN) == LOW) {
+        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
             Serial.println("Stop: FDC Home");
             menuLCD.clear();
             menuLCD.displayMessage("Home", NULL, 1000);
             Moteur1.stop();
             moteurStatut = MoteurStatutArret;
         }
-        if (digitalRead(FDC_END_PIN) == LOW) {
+        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
             Serial.println("Stop: FDC End");
             menuLCD.clear();
             menuLCD.displayMessage("Fin de course", NULL, 1000);
@@ -104,7 +105,7 @@ void loop()
     
     // Right: Arriere
     case 0:
-        if (digitalRead(FDC_HOME_PIN) == LOW) {
+        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
             menuLCD.displayMessage("Debut de course", NULL, 1000);
             Serial.print("Debut de course : butee ");
             Serial.println(FDC_HOME_PIN);
@@ -115,7 +116,7 @@ void loop()
 
     // Left: Avant
     case 3: // Direction 2 en manuel
-        if (digitalRead(FDC_END_PIN) == LOW) {
+        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
             menuLCD.displayMessage("Fin de course", NULL, 1000);
             Serial.print("Fin de course : butee ");
             Serial.println(FDC_END_PIN);
