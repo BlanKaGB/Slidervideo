@@ -16,7 +16,7 @@ int8_t MenuLCD::getKey()
     int8_t key;
 
     key = _deuligne.get_key();
-    if (key != _lastKey) {
+    if ((_lastKey == -1 && key != -1) || (_lastKey != -1 && key == -1)) {
         _lastKey = key;
     } else {
         key = -1;

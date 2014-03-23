@@ -15,7 +15,7 @@ private:
     Deuligne             _deuligne;
     unsigned long        _messageTime;
     unsigned long        _messageDelay;
-    unsigned char        _lastKey;
+    int8_t               _lastKey;
     char                 _firstLine[LINE_SIZE + 1];
     char                 _secondLine[LINE_SIZE + 1];
 };
