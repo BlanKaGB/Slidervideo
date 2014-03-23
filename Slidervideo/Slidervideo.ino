@@ -29,7 +29,7 @@ typedef enum {
 #define FDC_HOME_PIN    13
 #define FDC_END_PIN     12
 #define FDC_ACTIVE      HIGH
-#define MAX_PAS         0xFFFFFFFF
+#define MAX_PAS         0x7FFFFFFF
 
 SnootorStep Moteur1;
 uint32_t pasMoteur = 400;
@@ -174,9 +174,12 @@ void loop()
               
     // Down: Pas -
     case 2:
-        pasMoteur -= parMoteurDelta;
-        if (pasMoteur < parMoteurDelta) {
+        Serial.println(parMoteurDelta);
+        Serial.println(pasMoteur);
+        if (pasMoteur < parMoteurDelta * 2) {
             pasMoteur = parMoteurDelta;
+        } else {
+            pasMoteur -= parMoteurDelta;
         }
         sprintf(buffer, "Pas - : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
@@ -202,6 +205,7 @@ void loop()
         }
         SC.delay(200);
         if (Moteur1.stopped()) {
+            moteurStatut = MoteurStatutArret;
             menuLCD.clear();
             Serial.print("Moteur : ");
             Serial.println(millis() - moteurStartTime);
