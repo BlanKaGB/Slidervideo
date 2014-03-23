@@ -82,7 +82,7 @@ void deplaceMoteur(uint32_t pas, boolean avance)
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Avance : MAX");
             } else {
-                sprintf(buffer, "Avance : %ud       ", pas);
+                sprintf(buffer, "Avance : %u       ", pas);
             }
         } else {
             Moteur1.forward(pas);
@@ -90,7 +90,7 @@ void deplaceMoteur(uint32_t pas, boolean avance)
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Arriere : MAX");
             } else {
-                sprintf(buffer, "Arriere : %ud       ", pas);
+                sprintf(buffer, "Arriere : %u       ", pas);
             }
         }
         menuLCD.displayMessage(buffer, NULL);
@@ -152,10 +152,12 @@ void loop()
 
     // Select: Arret
     case 4: // Stop
-        menuLCD.clear();
-        menuLCD.displayMessage("Arret moteur", NULL, 1000);
-        Moteur1.stop();
-        moteurStatut = MoteurStatutArret;
+        if (moteurStatut != MoteurStatutArret) {
+            menuLCD.clear();
+            menuLCD.displayMessage("Arret moteur", NULL, 1000);
+            Moteur1.stop();
+            moteurStatut = MoteurStatutArret;
+        }
         break;
 
 
