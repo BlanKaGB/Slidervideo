@@ -82,23 +82,21 @@ void loop()
 {       
     char buffer[32];
     
-    if (moteurStatut != MoteurStatutArret) {
-        // Stop la course du moteur avec les butées
-        // seulement si le moteur est en train de tourner...
-        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
-            Serial.println("Stop: FDC Home");
-            menuLCD.clear();
-            menuLCD.displayMessage("Home", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-        }
-        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
-            Serial.println("Stop: FDC End");
-            menuLCD.clear();
-            menuLCD.displayMessage("Fin de course", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-        }
+    if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatus == MoteurStatutArriere) {
+        // Si on revient en arriere et que le capteur de debut s'active, on arrete
+        Serial.println("Stop: FDC Home");
+        menuLCD.clear();
+        menuLCD.displayMessage("Debut de course", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
+    }
+    if (digitalRead(FDC_END_PIN) == FDC_ACTIVE && moteurStatus == MoteurStatutAvant) {
+        // Si on part en avant et que le capteur de fin s'active, on arrete
+        Serial.println("Stop: FDC End");
+        menuLCD.clear();
+        menuLCD.displayMessage("Fin de course", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
     }
     
     switch(menuLCD.getKey()) {
