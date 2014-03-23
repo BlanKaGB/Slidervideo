@@ -40,6 +40,9 @@ MoteurStatut moteurStatut = MoteurStatutArret;
 
 void setup()
 {
+    MenuLCDMenuItem *mainMenu;
+    MenuLCDMenuItem *menuItem;
+    
     Serial.begin(115200);
     Wire.begin(); // join i2c
   
@@ -49,7 +52,18 @@ void setup()
     pinMode(FDC_END_PIN,INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
     
     menuLCD.init();
-    menuLCD.displayMessage("Pret...", NULL, 2000);
+    
+    mainMenu = menuLCD.getMainMenuItem();
+    menuLCD.addSubMenuItem(mainMenu, "Titre 1", 1);
+    menuItem = menuLCD.addSubMenuItem(mainMenu, "Titre 2", 2);
+    menuLCD.addSubMenuItem(menuItem, "sous titre 1", 6);
+    menuLCD.addSubMenuItem(menuItem, "sous titre 2", 7);
+    menuLCD.addSubMenuItem(menuItem, "sous titre 3", 8);
+    menuLCD.addSubMenuItem(mainMenu, "Titre 3", 3);
+    menuLCD.addSubMenuItem(mainMenu, "Titre 4", 4);
+    menuLCD.addSubMenuItem(mainMenu, "Titre 5", 5);
+    Serial.println("--");
+    menuLCD.debugPrint();
 }
 
 void deplaceMoteur(boolean avance)
@@ -74,6 +88,13 @@ void deplaceMoteur(boolean avance)
 void loop()
 {       
     char buffer[32];
+    int identifier;
+    
+    identifier = menuLCD.selectedMenuIdentifer();
+    if (identifier) {
+        Serial.print("menu ");
+        Serial.println(identifier);
+    }
     
     if (moteurStatut != MoteurStatutArret) {
         // Stop la course du moteur avec les butées
@@ -92,7 +113,7 @@ void loop()
         }
     }
     
-    switch(menuLCD.getKey()) {
+    switch(7) {
     
     // Up: Avant
     case 0:
