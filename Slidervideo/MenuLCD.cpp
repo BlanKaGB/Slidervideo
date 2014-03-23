@@ -91,7 +91,7 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
                 _editedValue = _editedValueMin;
             }
             break;
-        case 3:
+        case 3: // left
             _deuligne.noBlink();
             this->clear();
             _editedValueCallback = NULL;
