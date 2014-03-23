@@ -3,7 +3,7 @@
 
 typedef struct __MenuLCDMenuItem {
     unsigned int identifier;
-    char title[LINE_SIZE];
+    char title[LINE_SIZE + 1];
     struct __MenuLCDMenuItem *parentMenuItem;
     struct __MenuLCDMenuItem *nextMenuItem;
     struct __MenuLCDMenuItem *subMenuItem;
@@ -22,6 +22,20 @@ inline void copyString(const char *origin, char *copy)
         }
         copy[ii] = 0;
     }
+}
+
+inline MenuLCDMenuItem *previousMenuItem(MenuLCDMenuItem *menuItem)
+{
+    MenuLCDMenuItem *result = menuItem->parentMenuItem->subMenuItem;
+    
+    if (result == menuItem) {
+        result = NULL;
+    } else {
+        while (result != NULL && result->nextMenuItem != menuItem) {
+            result = result->nextMenuItem;
+        }
+    }
+    return result;
 }
 
 MenuLCD::MenuLCD(void)
@@ -60,16 +74,60 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
     
     if (key != -1 && _firstLineMenuItem == NULL) {
         this->selectMenuItem(_mainMenuItem->subMenuItem);
-    } else if (key == 0) { // up
+    } else if (key == 1) { // up
+        if (_selectedLine > 0) {
+            _selectedLine--;
+            this->updateMenu();
+        } else {
+            MenuLCDMenuItem *previous = previousMenuItem(_firstLineMenuItem);
+            
+            if (previous != NULL) {
+                _firstLineMenuItem = previous;
+                this->updateMenu();
+            }
+        }
+    } else if (key == 2) { //down
+        if (_selectedLine < 1) {
+            _selectedLine++;
+            this->updateMenu();
+        } else {
+            MenuLCDMenuItem *next = _firstLineMenuItem->nextMenuItem;
+            
+            if (next != NULL && next->nextMenuItem != NULL) {
+                _firstLineMenuItem = next;
+                this->updateMenu();
+            }
+        }
+    } else if (key == 3) { // left
+        if (_firstLineMenuItem->parentMenuItem == _mainMenuItem) {
+            this->selectMenuItem(NULL);
+        } else {
+            _firstLineMenuItem = _firstLineMenuItem->parentMenuItem;
+            _selectedLine = 0;
+            this->updateMenu();
+        }
+    } else if (key == 0) { //right
+        MenuLCDMenuItem *cursorMenuItem = this->menuItemUnderCursor();
         
+        if (cursorMenuItem->subMenuItem) {
+            this->selectMenuItem(cursorMenuItem->subMenuItem);
+        }
     }
+    return result;
 }
 
 void MenuLCD::selectMenuItem(MenuLCDMenuItem *menuItem)
 {
-    _firstLineMenuItem = menuItem;
-    _selectedLine = 0;
-    this->updateMenu();
+    if (menuItem == NULL) {
+        _firstLineMenuItem = NULL;
+        _selectedLine = 0;
+        _deuligne.noBlink();
+        this->clear();
+    } else {
+        _firstLineMenuItem = menuItem;
+        _selectedLine = 0;
+        this->updateMenu();
+    }
 }
 
 void MenuLCD::updateMenu(void)
@@ -92,6 +150,8 @@ void MenuLCD::updateMenu(void)
         }
     }
     this->displayMessage(line1, line2, 0);
+    _deuligne.blink();
+    _deuligne.setCursor(0, _selectedLine);
 }
 
 void MenuLCD::displayMessage(const char *line1, const char *line2, unsigned int delay)
@@ -143,7 +203,9 @@ void MenuLCD::clear(void)
 MenuLCDMenuItem *MenuLCD::getMainMenuItem(void)
 {
     if (!_mainMenuItem) {
-        _mainMenuItem = addMenuItem(NULL, NULL, 0);
+        _mainMenuItem = this->createMenuItem(NULL, 0);
+        _mainMenuItem->nextMenuItem = NULL;
+        _mainMenuItem->parentMenuItem = NULL;
     }
     return _mainMenuItem;
 }
@@ -216,6 +278,49 @@ void MenuLCD::changeMenuItemTitle(MenuLCDMenuItem *menuItem, const char *title)
             ii++;
         }
     }
+    while (ii < LINE_SIZE) {
+        menuItem->title[ii] = ' ';
+        ii++;
+    }
     menuItem->title[ii] = 0;
 }
 
+MenuLCDMenuItem *MenuLCD::menuItemUnderCursor(void)
+{
+    MenuLCDMenuItem *result = _firstLineMenuItem;
+    unsigned int ii = _selectedLine;
+    
+    if (result != NULL) {
+        while (ii > 0) {
+            result = result->nextMenuItem;
+            ii--;
+        }
+    }
+    return result;
+}
+
+void printMenu(MenuLCDMenuItem *menuItem, const char *prefix)
+{
+    char subPrefix[32];
+    
+    strcpy(subPrefix, prefix);
+    subPrefix[strlen(prefix)] = '+';
+    subPrefix[strlen(prefix)+1] = ' ';
+    subPrefix[strlen(prefix)+2] = ' ';
+    subPrefix[strlen(prefix)+3] = 0;
+    while(menuItem) {
+        Serial.print(prefix);
+        Serial.print((unsigned int)menuItem, HEX);
+        Serial.print(" ");
+        Serial.print(menuItem->title);
+        Serial.print(", ");
+        Serial.println(menuItem->identifier);
+        printMenu(menuItem->subMenuItem, subPrefix);
+        menuItem = menuItem->nextMenuItem;
+    }
+}
+
+void MenuLCD::debugPrint(void)
+{
+    printMenu(_mainMenuItem, "");
+}

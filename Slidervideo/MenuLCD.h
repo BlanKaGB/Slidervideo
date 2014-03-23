@@ -14,10 +14,12 @@ public:
     void loop(void);
     void clear(void);
     unsigned int selectedMenuIdentifer(void);
+    MenuLCDMenuItem *menuItemUnderCursor(void);
     MenuLCDMenuItem *getMainMenuItem(void);
     MenuLCDMenuItem *addMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identifier);
     MenuLCDMenuItem *addSubMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identier);
     void changeMenuItemTitle(MenuLCDMenuItem *menuItem, const char *title);
+    void debugPrint(void);
     
 private:
     Deuligne             _deuligne;
