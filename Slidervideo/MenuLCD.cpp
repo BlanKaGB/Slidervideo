@@ -104,6 +104,11 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
         } else {
             _firstLineMenuItem = _firstLineMenuItem->parentMenuItem;
             _selectedLine = 0;
+            if (_firstLineMenuItem->nextMenuItem == NULL && _firstLineMenuItem->parentMenuItem->subMenuItem != _firstLineMenuItem) {
+                // Avoid to have an empty line in the end of the display
+                _firstLineMenuItem = previousMenuItem(_firstLineMenuItem);
+                _selectedLine = 1;
+            }
             this->updateMenu();
         }
     } else if (key == 0 || (key == 4 && this->menuItemUnderCursor()->subMenuItem)) { //right
