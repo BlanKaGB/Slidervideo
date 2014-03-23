@@ -117,6 +117,11 @@ void deplaceMoteur(uint32_t pas, boolean avance)
     }
 }
 
+void changePas(long value)
+{
+    pasMoteur = value;
+}
+
 void loop()
 {       
     char buffer[32];
@@ -126,6 +131,9 @@ void loop()
     if (identifier) {
         Serial.print("menu ");
         Serial.println(identifier);
+        if (identifier == 1) {
+            menuLCD.editValue(pasMoteur, parMoteurDelta, parMoteurDelta, 0x7FFFFFFF, "Pas :", changePas);
+        }
     }
     
     if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
