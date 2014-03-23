@@ -29,7 +29,7 @@ typedef enum {
 #define FDC_HOME_PIN    13
 #define FDC_END_PIN     12
 #define FDC_ACTIVE      HIGH
-#define MAX_PAS         0xFFFFFFFF
+#define MAX_PAS         0x7FFFFFFF
 
 SnootorStep Moteur1;
 uint32_t pasMoteur = 400;
