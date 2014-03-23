@@ -1,6 +1,7 @@
 #include "MenuLCD.h"
 
 #define EMPTY_LINE "                "
+#define NUMBER_OF_LINE        2
 
 typedef struct __MenuLCDMenuItem {
     unsigned int identifier;
@@ -103,14 +104,7 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
         if (_firstLineMenuItem->parentMenuItem == _mainMenuItem) {
             this->selectMenuItem(NULL);
         } else {
-            _firstLineMenuItem = _firstLineMenuItem->parentMenuItem;
-            _selectedLine = 0;
-            if (_firstLineMenuItem->nextMenuItem == NULL && _firstLineMenuItem->parentMenuItem->subMenuItem != _firstLineMenuItem) {
-                // Avoid to have an empty line in the end of the display
-                _firstLineMenuItem = previousMenuItem(_firstLineMenuItem);
-                _selectedLine = 1;
-            }
-            this->updateMenu();
+            this->selectMenuItem(_firstLineMenuItem->parentMenuItem);
         }
     } else if (key == 0 || (key == 4 && this->menuItemUnderCursor()->subMenuItem)) { //right
         MenuLCDMenuItem *cursorMenuItem = this->menuItemUnderCursor();
@@ -136,6 +130,10 @@ void MenuLCD::selectMenuItem(MenuLCDMenuItem *menuItem)
     } else {
         _firstLineMenuItem = menuItem;
         _selectedLine = 0;
+        while (_selectedLine < NUMBER_OF_LINE - 1 && _firstLineMenuItem->parentMenuItem->subMenuItem != _firstLineMenuItem) {
+            _firstLineMenuItem = previousMenuItem(_firstLineMenuItem);
+            _selectedLine++;
+        }
         this->updateMenu();
     }
 }
