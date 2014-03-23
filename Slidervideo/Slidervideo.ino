@@ -31,6 +31,12 @@ typedef enum {
 #define FDC_ACTIVE      HIGH
 #define MAX_PAS         0x7FFFFFFF
 
+#define MENU_AVANCER            1
+#define MENU_RECULER            2
+#define MENU_DEBUT              3
+#define MENU_FIN                4
+#define MENU_CHANGER_PAS        5
+
 SnootorStep Moteur1;
 uint32_t pasMoteur = 400;
 uint32_t parMoteurDelta = 1000;
@@ -56,17 +62,11 @@ void setup()
     menuLCD.init();
     
     mainMenu = menuLCD.getMainMenuItem();
-    menuLCD.addSubMenuItem(mainMenu, "Titre 1", 1);
-    menuItem = menuLCD.addSubMenuItem(mainMenu, "Titre 2", 2);
-    menuLCD.addSubMenuItem(menuItem, "sous titre 1", 6);
-    menuLCD.addSubMenuItem(menuItem, "sous titre 2", 7);
-    menuItem = menuLCD.addSubMenuItem(menuItem, "sous titre 3", 8);
-    menuLCD.addSubMenuItem(menuItem, "tres profond", 7);
-    menuLCD.addSubMenuItem(mainMenu, "Titre 3", 3);
-    menuLCD.addSubMenuItem(mainMenu, "Titre 4", 4);
-    menuLCD.addSubMenuItem(mainMenu, "Titre 5", 5);
-    Serial.println("--");
-    menuLCD.debugPrint();
+    menuLCD.addSubMenuItem(mainMenu, "Avancer", MENU_AVANCER);
+    menuLCD.addSubMenuItem(mainMenu, "Reculer", MENU_RECULER);
+    menuLCD.addSubMenuItem(mainMenu, "Debut", MENU_DEBUT);
+    menuLCD.addSubMenuItem(mainMenu, "Fin", MENU_FIN);
+    menuLCD.addSubMenuItem(mainMenu, "Change pas...", MENU_CHANGER_PAS);
 
     Serial.print(FDC_HOME_PIN);
     Serial.print(" " );
@@ -125,81 +125,48 @@ void changePas(long value)
 void loop()
 {       
     char buffer[32];
-    int identifier;
     
-    identifier = menuLCD.selectedMenuIdentifer();
-    if (identifier) {
-        Serial.print("menu ");
-        Serial.println(identifier);
-        if (identifier == 1) {
-            menuLCD.editValue(pasMoteur, parMoteurDelta, parMoteurDelta, 0x7FFFFFFF, "Pas :", changePas);
+    if (moteurStatut == MoteurStatutArret) {
+        int identifier;
+        
+        switch(menuLCD.selectedMenuIdentifer()) {
+        case MENU_AVANCER:
+            deplaceMoteur(pasMoteur, true);
+            break;
+        case MENU_RECULER:
+            deplaceMoteur(pasMoteur, false);
+            break;
+        case MENU_DEBUT:
+            deplaceMoteur(MAX_PAS, false);
+            break;
+        case MENU_FIN:
+            deplaceMoteur(MAX_PAS, true);
+            break;
+        case MENU_CHANGER_PAS:
+            menuLCD.editValue(pasMoteur, parMoteurDelta, parMoteurDelta, MAX_PAS, "Pas :", changePas);
+            break;
         }
-    }
-    
-    if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
+    } else if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
         // Si on revient en arriere et que le capteur de debut s'active, on arrete
         Serial.println("Stop: FDC Home");
         menuLCD.clear();
         menuLCD.displayMessage("Debut de course", NULL, 1000);
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
-    }
-    if (digitalRead(FDC_END_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutAvant) {
+    } else if (digitalRead(FDC_END_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutAvant) {
         // Si on part en avant et que le capteur de fin s'active, on arrete
         Serial.println("Stop: FDC End");
         menuLCD.clear();
         menuLCD.displayMessage("Fin de course", NULL, 1000);
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
-    }
-    
-    switch(7) {
-    
-    // Right: Arriere
-    case 0:
-        deplaceMoteur(pasMoteur, false);
-        break; 
-
-    // Left: Avant
-    case 3: // Direction 2 en manuel
-        deplaceMoteur(pasMoteur, true);
-        break;
-            
-    // Up: Pas +
-    case 1:
-        pasMoteur += parMoteurDelta;
-        sprintf(buffer, "Pas + : %d", pasMoteur);
-        menuLCD.displayMessage(buffer, NULL, 1000);
-        break;
-              
-    // Down: Pas -
-    case 2:
-        Serial.println(parMoteurDelta);
-        Serial.println(pasMoteur);
-        if (pasMoteur < parMoteurDelta * 2) {
-            pasMoteur = parMoteurDelta;
-        } else {
-            pasMoteur -= parMoteurDelta;
-        }
-        sprintf(buffer, "Pas - : %d", pasMoteur);
-        menuLCD.displayMessage(buffer, NULL, 1000);
-        break;
-
-    // Select: Arret
-    case 4: // Stop
-        if (moteurStatut != MoteurStatutArret) {
-            menuLCD.clear();
-            menuLCD.displayMessage("Arret moteur", NULL, 1000);
-            Moteur1.stop();
-            moteurStatut = MoteurStatutArret;
-        }
-        break;
-
-
-    default:
-        break;
-    }
-    if (!Moteur1.stopped()) {
+    } else if (menuLCD.getKey() == 4) {
+        Serial.println("Stop");
+        menuLCD.clear();
+        menuLCD.displayMessage("Stop", NULL, 1000);
+        Moteur1.stop();
+        moteurStatut = MoteurStatutArret;
+    } else {
         if (moteurStartTime == 0) {
             moteurStartTime = millis();
         }
