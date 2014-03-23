@@ -175,7 +175,7 @@ void loop()
             Serial.println(millis() - moteurStartTime);
             Serial.print("Temps par pas : ");
             Serial.println((millis() - moteurStartTime) / (double)pasMoteurStart);
-            moteurStart = 0;
+            moteurStartTime = 0;
         }
     }
     menuLCD.loop();
