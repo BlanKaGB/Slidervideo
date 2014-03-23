@@ -173,6 +173,7 @@ void loop()
         }
         SC.delay(200);
         if (Moteur1.stopped()) {
+            moteurStatut = MoteurStatutArret;
             menuLCD.clear();
             Serial.print("Moteur : ");
             Serial.println(millis() - moteurStartTime);
