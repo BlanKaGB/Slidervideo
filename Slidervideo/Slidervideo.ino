@@ -142,9 +142,12 @@ void loop()
               
     // Down: Pas -
     case 2:
-        pasMoteur -= parMoteurDelta;
-        if (pasMoteur < parMoteurDelta) {
+        Serial.println(parMoteurDelta);
+        Serial.println(pasMoteur);
+        if (pasMoteur < parMoteurDelta * 2) {
             pasMoteur = parMoteurDelta;
+        } else {
+            pasMoteur -= parMoteurDelta;
         }
         sprintf(buffer, "Pas - : %d", pasMoteur);
         menuLCD.displayMessage(buffer, NULL, 1000);
