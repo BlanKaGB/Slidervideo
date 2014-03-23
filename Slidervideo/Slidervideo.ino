@@ -63,26 +63,36 @@ void deplaceMoteur(int pas, boolean avance)
 {
     char buffer[32];
 
-    if (avance) {
-        Moteur1.back(pas);
-        moteurStatut = MoteurStatutAvant;
-        sprintf(buffer, "Avance : %d       ", pas);
+    if (avance && digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
+        menuLCD.displayMessage("Fin de course", NULL, 1000);
+        Serial.print("Fin de course : butee ");
+        Serial.println(FDC_END_PIN);
+    } else if (!avance && digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
+        menuLCD.displayMessage("Debut de course", NULL, 1000);
+        Serial.print("Debut de course : butee ");
+        Serial.println(FDC_HOME_PIN);
     } else {
-        Moteur1.forward(pas);
-        moteurStatut = MoteurStatutArriere;
-        sprintf(buffer, "Arriere : %d       ", pas);
+        if (avance) {
+            Moteur1.back(pas);
+            moteurStatut = MoteurStatutAvant;
+            sprintf(buffer, "Avance : %d       ", pas);
+        } else {
+            Moteur1.forward(pas);
+            moteurStatut = MoteurStatutArriere;
+            sprintf(buffer, "Arriere : %d       ", pas);
+        }
+        menuLCD.displayMessage(buffer, NULL);
+        Serial.print("Pas moteur : ");
+        Serial.println(pas);
+        pasMoteurStart = pasMoteur;
     }
-    menuLCD.displayMessage(buffer, NULL);
-    Serial.print("Pas moteur : ");
-    Serial.println(pas);
-    pasMoteurStart = pasMoteur;
 }
 
 void loop()
 {       
     char buffer[32];
     
-    if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatus == MoteurStatutArriere) {
+    if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
         // Si on revient en arriere et que le capteur de debut s'active, on arrete
         Serial.println("Stop: FDC Home");
         menuLCD.clear();
@@ -90,7 +100,7 @@ void loop()
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
     }
-    if (digitalRead(FDC_END_PIN) == FDC_ACTIVE && moteurStatus == MoteurStatutAvant) {
+    if (digitalRead(FDC_END_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutAvant) {
         // Si on part en avant et que le capteur de fin s'active, on arrete
         Serial.println("Stop: FDC End");
         menuLCD.clear();
@@ -103,24 +113,12 @@ void loop()
     
     // Right: Arriere
     case 0:
-        if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE) {
-            menuLCD.displayMessage("Debut de course", NULL, 1000);
-            Serial.print("Debut de course : butee ");
-            Serial.println(FDC_HOME_PIN);
-        } else {
-            deplaceMoteur(pasMoteur, false);
-        }
+        deplaceMoteur(pasMoteur, false);
         break; 
 
     // Left: Avant
     case 3: // Direction 2 en manuel
-        if (digitalRead(FDC_END_PIN) == FDC_ACTIVE) {
-            menuLCD.displayMessage("Fin de course", NULL, 1000);
-            Serial.print("Fin de course : butee ");
-            Serial.println(FDC_END_PIN);
-        } else {
-            deplaceMoteur(pasMoteur, true);
-        }
+        deplaceMoteur(pasMoteur, true);
         break;
             
     // Up: Pas +
