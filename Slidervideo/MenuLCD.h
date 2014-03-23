@@ -13,6 +13,7 @@ public:
     void displayMessage(const char *line1, const char *line2 = NULL, unsigned int delay = 0);
     void loop(void);
     void clear(void);
+    MenuLCDMenuItem *lastSelectedMenuItem(void);
     unsigned int selectedMenuIdentifer(void);
     MenuLCDMenuItem *menuItemUnderCursor(void);
     MenuLCDMenuItem *getMainMenuItem(void);
@@ -31,6 +32,7 @@ private:
     MenuLCDMenuItem      *_mainMenuItem;
     MenuLCDMenuItem      *_firstLineMenuItem;
     int                  _selectedLine;
+    MenuLCDMenuItem      *_lastSelectedMenuItem;
     
     MenuLCDMenuItem *createMenuItem(const char *title, unsigned int identifier);
     void freeMenuItem(MenuLCDMenuItem *menuItem);

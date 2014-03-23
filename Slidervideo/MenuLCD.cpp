@@ -106,12 +106,16 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
             _selectedLine = 0;
             this->updateMenu();
         }
-    } else if (key == 0) { //right
+    } else if (key == 0 || (key == 4 && this->menuItemUnderCursor()->subMenuItem)) { //right
         MenuLCDMenuItem *cursorMenuItem = this->menuItemUnderCursor();
         
         if (cursorMenuItem->subMenuItem) {
             this->selectMenuItem(cursorMenuItem->subMenuItem);
         }
+    } else if (key == 4) {
+        _lastSelectedMenuItem = this->menuItemUnderCursor();
+        result = _lastSelectedMenuItem->identifier;
+        this->selectMenuItem(NULL);
     }
     return result;
 }
@@ -297,6 +301,11 @@ MenuLCDMenuItem *MenuLCD::menuItemUnderCursor(void)
         }
     }
     return result;
+}
+
+MenuLCDMenuItem *MenuLCD::lastSelectedMenuItem(void)
+{
+    return _lastSelectedMenuItem;
 }
 
 void printMenu(MenuLCDMenuItem *menuItem, const char *prefix)
