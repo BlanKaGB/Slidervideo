@@ -26,7 +26,7 @@ typedef enum {
     MoteurStatutArriere,
 } MoteurStatut;
 
-#define FDC_HOME_PIN    13
+#define FDC_HOME_PIN    11
 #define FDC_END_PIN     12
 
 SnootorStep Moteur1;
