@@ -44,6 +44,7 @@ MenuLCD::MenuLCD(void)
 {
     _mainMenuItem = NULL;
     _firstLineMenuItem = NULL;
+    _editedValueCallback = NULL;
 }
 
 void MenuLCD::init(void)
@@ -74,48 +75,81 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
     unsigned int result = 0;
     int8_t key = this->getKey();
     
-    if (key != -1 && _firstLineMenuItem == NULL) {
-        this->selectMenuItem(_mainMenuItem->subMenuItem);
-    } else if (key == 1) { // up
-        if (_selectedLine > 0) {
-            _selectedLine--;
-            _deuligne.setCursor(0, _selectedLine);
-        } else {
-            MenuLCDMenuItem *previous = previousMenuItem(_firstLineMenuItem);
-            
-            if (previous != NULL) {
-                _firstLineMenuItem = previous;
-                this->updateMenu();
+    if (_editedValueCallback) {
+        switch (key) {
+        case 1: // up
+            if (_editedValue < _editedValueMax - _editedValueDelta) {
+                _editedValue += _editedValueDelta;
+            } else {
+                _editedValue = _editedValueMax;
             }
-        }
-    } else if (key == 2) { //down
-        if (_selectedLine < NUMBER_OF_LINE - 1) {
-            _selectedLine++;
-            _deuligne.setCursor(0, _selectedLine);
-        } else {
-            MenuLCDMenuItem *next = _firstLineMenuItem->nextMenuItem;
-            
-            if (next != NULL && next->nextMenuItem != NULL) {
-                _firstLineMenuItem = next;
-                this->updateMenu();
+            break;
+        case 2: // down
+            if (_editedValue > _editedValueMin + _editedValueDelta) {
+                _editedValue -= _editedValueDelta;
+            } else {
+                _editedValue = _editedValueMin;
             }
+            break;
+        case 3:
+            _deuligne.noBlink();
+            this->clear();
+            _editedValueCallback = NULL;
+            break;
+        case 4: // select
+            _deuligne.noBlink();
+            this->clear();
+            _editedValueCallback(_editedValue);
+            _editedValueCallback = NULL;
+            break;
         }
-    } else if (key == 3) { // left
-        if (_firstLineMenuItem->parentMenuItem == _mainMenuItem) {
-            this->selectMenuItem(NULL);
-        } else {
-            this->selectMenuItem(_firstLineMenuItem->parentMenuItem);
+        if (key != -1 && _editedValueCallback != NULL) {
+            this->displayEditedValue();
         }
-    } else if (key == 0 || (key == 4 && this->menuItemUnderCursor()->subMenuItem)) { //right
-        MenuLCDMenuItem *cursorMenuItem = this->menuItemUnderCursor();
+    } else {
+        if (key != -1 && _firstLineMenuItem == NULL) {
+            this->selectMenuItem(_mainMenuItem->subMenuItem);
+        } else if (key == 1) { // up
+            if (_selectedLine > 0) {
+                _selectedLine--;
+                _deuligne.setCursor(0, _selectedLine);
+            } else {
+                MenuLCDMenuItem *previous = previousMenuItem(_firstLineMenuItem);
+            
+                if (previous != NULL) {
+                    _firstLineMenuItem = previous;
+                    this->updateMenu();
+                }
+            }
+        } else if (key == 2) { //down
+            if (_selectedLine < NUMBER_OF_LINE - 1) {
+                _selectedLine++;
+                _deuligne.setCursor(0, _selectedLine);
+            } else {
+                MenuLCDMenuItem *next = _firstLineMenuItem->nextMenuItem;
+            
+                if (next != NULL && next->nextMenuItem != NULL) {
+                    _firstLineMenuItem = next;
+                    this->updateMenu();
+                }
+            }
+        } else if (key == 3) { // left
+            if (_firstLineMenuItem->parentMenuItem == _mainMenuItem) {
+                this->selectMenuItem(NULL);
+            } else {
+                this->selectMenuItem(_firstLineMenuItem->parentMenuItem);
+            }
+        } else if (key == 0 || (key == 4 && this->menuItemUnderCursor()->subMenuItem)) { //right
+            MenuLCDMenuItem *cursorMenuItem = this->menuItemUnderCursor();
         
-        if (cursorMenuItem->subMenuItem) {
-            this->selectMenuItem(cursorMenuItem->subMenuItem);
+            if (cursorMenuItem->subMenuItem) {
+                this->selectMenuItem(cursorMenuItem->subMenuItem);
+            }
+        } else if (key == 4) {
+            _lastSelectedMenuItem = this->menuItemUnderCursor();
+            result = _lastSelectedMenuItem->identifier;
+            this->selectMenuItem(NULL);
         }
-    } else if (key == 4) {
-        _lastSelectedMenuItem = this->menuItemUnderCursor();
-        result = _lastSelectedMenuItem->identifier;
-        this->selectMenuItem(NULL);
     }
     return result;
 }
@@ -314,6 +348,35 @@ MenuLCDMenuItem *MenuLCD::menuItemUnderCursor(void)
 MenuLCDMenuItem *MenuLCD::lastSelectedMenuItem(void)
 {
     return _lastSelectedMenuItem;
+}
+
+void MenuLCD::editValue(long value, long delta, long minValue, long maxValue, const char *message, void (*callback)(long value))
+{
+    _editedValue = value;
+    _editedValueDelta = delta;
+    _editedValueMax = maxValue;
+    _editedValueMin = minValue;
+    _editedValueCallback = callback;
+    _deuligne.blink();
+   this->displayMessage(message, NULL, 0);
+   this->displayEditedValue();
+}
+
+void MenuLCD::displayEditedValue(void)
+{
+    char buffer[LINE_SIZE + 1];
+    char ii, count;
+    
+    sprintf(buffer, "%ld", _editedValue);
+    count = ii = strlen(buffer);
+    while (ii < LINE_SIZE) {
+        buffer[ii] = ' ';
+        ii++;
+    }
+    buffer[ii] = 0;
+    _deuligne.setCursor(0, 1);
+    _deuligne.print(buffer);
+    _deuligne.setCursor(count, 1);
 }
 
 void printMenu(MenuLCDMenuItem *menuItem, const char *prefix)
