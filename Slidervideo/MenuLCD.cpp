@@ -89,7 +89,7 @@ unsigned int MenuLCD::selectedMenuIdentifer(void)
             }
         }
     } else if (key == 2) { //down
-        if (_selectedLine < 1) {
+        if (_selectedLine < NUMBER_OF_LINE - 1) {
             _selectedLine++;
             _deuligne.setCursor(0, _selectedLine);
         } else {
