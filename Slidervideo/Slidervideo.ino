@@ -46,8 +46,8 @@ void setup()
   
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
     
-    pinMode(FDC_HOME_PIN,INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
-    pinMode(FDC_END_PIN,INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
+    pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
+    pinMode(FDC_END_PIN, INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
     
     menuLCD.init();
     menuLCD.displayMessage("Pret...", NULL, 2000);
