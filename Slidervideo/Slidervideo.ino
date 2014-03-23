@@ -105,7 +105,9 @@ void loop()
     // Right: Arriere
     case 0:
         if (digitalRead(FDC_HOME_PIN) == LOW) {
-            menuLCD.displayMessage("Home", NULL, 1000);
+            menuLCD.displayMessage("Debut de course", NULL, 1000);
+            Serial.print("Debut de course : butee ");
+            Serial.println(FDC_HOME_PIN);
         } else {
             deplaceMoteur(pasMoteur, true);
         }
@@ -115,6 +117,8 @@ void loop()
     case 3: // Direction 2 en manuel
         if (digitalRead(FDC_END_PIN) == LOW) {
             menuLCD.displayMessage("Fin de course", NULL, 1000);
+            Serial.print("Fin de course : butee ");
+            Serial.println(FDC_END_PIN);
         } else {
             deplaceMoteur(pasMoteur, false);
         }
