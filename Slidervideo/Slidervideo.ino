@@ -31,8 +31,8 @@ typedef enum {
 #define FDC_ACTIVE      HIGH
 
 SnootorStep Moteur1;
-int pasMoteur = 400;
-int parMoteurDelta = 1000;
+uint32_t pasMoteur = 400;
+uint32_t parMoteurDelta = 1000;
 MenuLCD menuLCD;
 unsigned int moteurStart = 0;
 unsigned int pasMoteurStart = 0;
@@ -50,7 +50,6 @@ void setup()
     pinMode(FDC_END_PIN, INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
     
     menuLCD.init();
-    menuLCD.displayMessage("Pret...", NULL, 2000);
     Serial.print(FDC_HOME_PIN);
     Serial.print(" " );
     Serial.println((digitalRead(FDC_HOME_PIN) == LOW)?"LOW":"HIGH");
@@ -59,7 +58,7 @@ void setup()
     Serial.println((digitalRead(FDC_END_PIN) == LOW)?"LOW":"HIGH");
 }
 
-void deplaceMoteur(int pas, boolean avance)
+void deplaceMoteur(uint32_t pas, boolean avance)
 {
     char buffer[32];
 
