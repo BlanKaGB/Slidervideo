@@ -59,7 +59,8 @@ void setup()
     menuItem = menuLCD.addSubMenuItem(mainMenu, "Titre 2", 2);
     menuLCD.addSubMenuItem(menuItem, "sous titre 1", 6);
     menuLCD.addSubMenuItem(menuItem, "sous titre 2", 7);
-    menuLCD.addSubMenuItem(menuItem, "sous titre 3", 8);
+    menuItem = menuLCD.addSubMenuItem(menuItem, "sous titre 3", 8);
+    menuLCD.addSubMenuItem(menuItem, "tres profond", 7);
     menuLCD.addSubMenuItem(mainMenu, "Titre 3", 3);
     menuLCD.addSubMenuItem(mainMenu, "Titre 4", 4);
     menuLCD.addSubMenuItem(mainMenu, "Titre 5", 5);
