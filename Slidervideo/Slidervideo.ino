@@ -18,7 +18,9 @@
 #include <Wire.h> // I2C library include
 #include <Deuligne.h> // LCD library include
 #include <snootor.h>
+#include <EEPROM.h>
 #include "MenuLCD.h"
+#include "Sauvegarde.h"
 
 typedef enum {
     MoteurStatutArret,
@@ -36,10 +38,12 @@ typedef enum {
 #define MENU_DEBUT              3
 #define MENU_FIN                4
 #define MENU_CHANGER_PAS        5
+#define MENU_CHANGER_PAS_DELTA  6
 
+Sauvegarde sauvegarde;
 SnootorStep Moteur1;
 uint32_t pasMoteur = 400;
-uint32_t parMoteurDelta = 1000;
+uint32_t pasMoteurDelta = 1000;
 MenuLCD menuLCD;
 unsigned long moteurStartTime = 0;
 uint32_t pasMoteurStart = 0;
@@ -54,6 +58,14 @@ void setup()
     Serial.begin(115200);
     Wire.begin(); // join i2c
   
+    if (sauvegarde.load()) {
+        Serial.println("EEPROM valide");
+    } else {
+        Serial.println("EEPROM invalide");
+    }
+    pasMoteur = sauvegarde.pasMoteur();
+    pasMoteurDelta = sauvegarde.pasMoteurDelta();
+    
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
     
     pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
@@ -62,11 +74,13 @@ void setup()
     menuLCD.init();
     
     mainMenu = menuLCD.getMainMenuItem();
-    menuLCD.addSubMenuItem(mainMenu, "Avancer", MENU_AVANCER);
-    menuLCD.addSubMenuItem(mainMenu, "Reculer", MENU_RECULER);
-    menuLCD.addSubMenuItem(mainMenu, "Debut", MENU_DEBUT);
-    menuLCD.addSubMenuItem(mainMenu, "Fin", MENU_FIN);
-    menuLCD.addSubMenuItem(mainMenu, "Change pas...", MENU_CHANGER_PAS);
+    menuLCD.addSubMenuItem(mainMenu, "AVANCER", MENU_AVANCER);
+    menuLCD.addSubMenuItem(mainMenu, "RECULER", MENU_RECULER);
+    menuLCD.addSubMenuItem(mainMenu, "DEBUT", MENU_DEBUT);
+    menuLCD.addSubMenuItem(mainMenu, "FIN", MENU_FIN);
+    menuItem = menuLCD.addSubMenuItem(mainMenu, "PARAMETRES", 0);
+    menuLCD.addSubMenuItem(menuItem, "CHANGE PAS...", MENU_CHANGER_PAS);
+    menuLCD.addSubMenuItem(menuItem, "CHANGE DELTA...", MENU_CHANGER_PAS_DELTA);
 
     Serial.print(FDC_HOME_PIN);
     Serial.print(" " );
@@ -120,6 +134,15 @@ void deplaceMoteur(uint32_t pas, boolean avance)
 void changePas(long value)
 {
     pasMoteur = value;
+    sauvegarde.setPasMoteur(pasMoteur);
+    sauvegarde.save();
+}
+
+void changePasDelta(long value)
+{
+    pasMoteurDelta = value;
+    sauvegarde.setPasMoteurDelta(pasMoteurDelta);
+    sauvegarde.save();
 }
 
 void loop()
@@ -143,7 +166,10 @@ void loop()
             deplaceMoteur(MAX_PAS, true);
             break;
         case MENU_CHANGER_PAS:
-            menuLCD.editValue(pasMoteur, parMoteurDelta, parMoteurDelta, MAX_PAS, "Pas :", changePas);
+            menuLCD.editValue(pasMoteur, pasMoteurDelta, pasMoteurDelta, MAX_PAS, "Pas :", changePas);
+            break;
+        case MENU_CHANGER_PAS_DELTA:
+            menuLCD.editValue(pasMoteurDelta, 100, 100, MAX_PAS, "Pas delta :", changePasDelta);
             break;
         }
     } else if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
