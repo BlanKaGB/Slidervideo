@@ -256,6 +256,12 @@ MenuLCDMenuItem *MenuLCD::getMainMenuItem(void)
     return _mainMenuItem;
 }
 
+void MenuLCD::setMainMenuItem(MenuLCDMenuItem *newMainMenu)
+{
+    this->selectMenuItem(NULL);
+    _mainMenuItem = newMainMenu;
+}
+
 MenuLCDMenuItem *MenuLCD::createMenuItem(const char *title, unsigned int identier)
 {
     MenuLCDMenuItem *result;

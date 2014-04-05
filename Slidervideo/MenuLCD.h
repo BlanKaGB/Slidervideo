@@ -18,6 +18,7 @@ public:
     unsigned int selectedMenuIdentifer(void);
     MenuLCDMenuItem *menuItemUnderCursor(void);
     MenuLCDMenuItem *getMainMenuItem(void);
+    void setMainMenuItem(MenuLCDMenuItem *newMainMenu);
     MenuLCDMenuItem *addMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identifier);
     MenuLCDMenuItem *addSubMenuItem(MenuLCDMenuItem *menuItem, const char *title, unsigned int identier);
     void changeMenuItemTitle(MenuLCDMenuItem *menuItem, const char *title);
