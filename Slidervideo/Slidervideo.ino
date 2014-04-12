@@ -70,7 +70,7 @@ void setup()
     vitesseDelta = sauvegarde.vitesseDelta();
     
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
-    
+    Moteur1.setDelay(vitesse);
     
     pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
     pinMode(FDC_END_PIN, INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
@@ -113,8 +113,7 @@ void deplaceMoteur(uint32_t pas, boolean avance)
         Serial.println(FDC_HOME_PIN);
     } else {
         if (avance) {
-            Moteur1.back(pas);
-            Moteur1.setDelay(vitesse); 
+            Moteur1.back(pas); 
             moteurStatut = MoteurStatutAvant;
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Avance : MAX");
@@ -123,7 +122,6 @@ void deplaceMoteur(uint32_t pas, boolean avance)
             }
         } else {
             Moteur1.forward(pas);
-            Moteur1.setDelay(vitesse);
             moteurStatut = MoteurStatutArriere;
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Arriere : MAX");
@@ -149,6 +147,13 @@ void changePasDelta(long value)
 {
     pasMoteurDelta = value;
     sauvegarde.setPasMoteurDelta(pasMoteurDelta);
+    sauvegarde.save();
+}
+
+void vitesseDelta(long value)
+{
+    vitesseDelta = value;
+    sauvegarde.setvitesseDelta(vitesseDelta);
     sauvegarde.save();
 }
 
@@ -179,7 +184,7 @@ void loop()
             menuLCD.editValue(pasMoteurDelta, 100, 100, MAX_PAS, "Pas delta :", changePasDelta);
             break;
         case MENU_CHANGER_VITESSE:
-            menuLCD.editValue(vitesseDelta, 100, 100, MAX_PAS, "Vitesse :", changevitesseDelta);
+            menuLCD.editValue(vitesseDelta, 100, 100, vitesse, "Vitesse :", changevitesseDelta);
             break;
         }
     } else if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
