@@ -70,7 +70,7 @@ void setup()
     vitesseDelta = sauvegarde.vitesseDelta();
     
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
-    Moteur1.setDelay(vitesse);
+    
     
     pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
     pinMode(FDC_END_PIN, INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
@@ -99,7 +99,7 @@ void setup()
     deplaceMoteur(MAX_PAS, false);
 }
 
-void deplaceMoteur(uint32_t pas, boolean avance);
+void deplaceMoteur(uint32_t pas, boolean avance)
 {
     char buffer[32];
 
@@ -113,7 +113,8 @@ void deplaceMoteur(uint32_t pas, boolean avance);
         Serial.println(FDC_HOME_PIN);
     } else {
         if (avance) {
-            Moteur1.back(pas); 
+            Moteur1.back(pas);
+            Moteur1.setDelay(vitesse); 
             moteurStatut = MoteurStatutAvant;
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Avance : MAX");
@@ -122,6 +123,7 @@ void deplaceMoteur(uint32_t pas, boolean avance);
             }
         } else {
             Moteur1.forward(pas);
+            Moteur1.setDelay(vitesse);
             moteurStatut = MoteurStatutArriere;
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Arriere : MAX");
