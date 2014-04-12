@@ -7,6 +7,8 @@ public:
     void setPasMoteur(long value);
     long pasMoteurDelta(void);
     void setPasMoteurDelta(long value);
+    long vitesseDelta(void);
+    void setvitesseDelta(long value);
     
     boolean load(void);
     void save(void);
@@ -14,6 +16,7 @@ public:
 private:
     long          _pasMoteur;
     long          _pasMoteurDelta;
+    long          _vitesseDelta;
     
     void defaultValues(void);
     
