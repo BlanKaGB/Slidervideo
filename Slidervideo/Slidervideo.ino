@@ -150,7 +150,7 @@ void changePasDelta(long value)
     sauvegarde.save();
 }
 
-void vitesseDelta(long value)
+void vitesse(long value)
 {
     vitesseDelta = value;
     sauvegarde.setvitesseDelta(vitesseDelta);
