@@ -70,7 +70,7 @@ void setup()
     vitesseDelta = sauvegarde.vitesseDelta();
     
     Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
-    Moteur1.setDelay(vitesse);
+    Moteur1.setDelay(vitesseDelta);
     
     pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
     pinMode(FDC_END_PIN, INPUT_PULLUP); // declare la pin digital FDC_END_PIN en entree
