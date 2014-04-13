@@ -3,7 +3,7 @@
 #include "Sauvegarde.h"
 
 #define TOKEN           "bonjour"
-#define VERSION         (int)1
+#define VERSION         (int)2
 
 void Sauvegarde::defaultValues(void)
 {

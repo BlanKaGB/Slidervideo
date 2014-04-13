@@ -32,7 +32,7 @@ typedef enum {
 #define FDC_END_PIN     12
 #define FDC_ACTIVE      HIGH
 #define MAX_PAS         0x7FFFFFFF
-#define MAX_VITESSE     1700     // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
+#define MAX_VITESSE     3000     // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
 // Ajouter une valeur MIN_VITESSE
 
 #define MENU_AVANCER                  1
@@ -163,6 +163,8 @@ void changevitesse(long value)
     vitesse = value;
     sauvegarde.setvitesse(vitesse);
     sauvegarde.save();
+    Serial.print("Vitesse :   ");
+    Serial.println(vitesse);
 }
 
 void changevitesseDelta(long value)
