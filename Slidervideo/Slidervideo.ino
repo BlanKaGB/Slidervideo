@@ -32,6 +32,8 @@ typedef enum {
 #define FDC_END_PIN     12
 #define FDC_ACTIVE      HIGH
 #define MAX_PAS         0x7FFFFFFF
+#define MAX_VITESSE     1700     // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
+// Ajouter une valeur MIN_VITESSE
 
 #define MENU_AVANCER                  1
 #define MENU_RECULER                  2
@@ -197,10 +199,10 @@ void loop()
             menuLCD.editValue(pasMoteurDelta, 100, 100, MAX_PAS, "Pas delta :", changePasDelta);
             break;
         case MENU_CHANGER_VITESSE:
-            menuLCD.editValue(vitesse, 100, 100, vitesse, "Vitesse :", changevitesse);
+            menuLCD.editValue(vitesse, vitesseDelta, vitesseDelta, MAX_VITESSE, "Vitesse :", changevitesse);
             break;
         case MENU_CHANGER_VITESSE_DELTA:
-            menuLCD.editValue(vitesseDelta, 100, 100, vitesse, "Vitesse delta :", changevitesseDelta);
+            menuLCD.editValue(vitesseDelta, 50, 50, MAX_VITESSE, "Vitesse delta :", changevitesseDelta);
             break;
         }
     } else if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
