@@ -9,7 +9,8 @@ void Sauvegarde::defaultValues(void)
 {
     _pasMoteur = 1000;
     _pasMoteurDelta = 1000;
-    _vitesseDelta = 500;
+    _vitesse = 1000;
+    _vitesseDelta = 1000;
 }
 
 boolean Sauvegarde::load(void)
@@ -31,6 +32,7 @@ boolean Sauvegarde::load(void)
     if (memcmp(buffer, TOKEN, sizeof(TOKEN)) == 0 && version == VERSION) {
         address += this->readValue(&_pasMoteur, address);
         address += this->readValue(&_pasMoteurDelta, address);
+        address += this->readValue(&_vitesse, address);
         address += this->readValue(&_vitesseDelta, address);
         result = true;
     }
@@ -45,6 +47,7 @@ void Sauvegarde::save(void)
     address += this->writeValue(VERSION, address);
     address += this->writeValue(_pasMoteur, address);
     address += this->writeValue(_pasMoteurDelta, address);
+    address += this->writeValue(_vitesse, address);
     address += this->writeValue(_vitesseDelta, address);
     Serial.println("EEPROM sauvegarde");
 }
@@ -90,6 +93,16 @@ long Sauvegarde::pasMoteurDelta(void)
 void Sauvegarde::setPasMoteurDelta(long value)
 {
     _pasMoteurDelta = value;
+}
+
+long Sauvegarde::vitesse(void)
+{
+    return _vitesse;
+}
+
+void Sauvegarde::setvitesse(long value)
+{
+    _vitesse = value;
 }
 
 long Sauvegarde::vitesseDelta(void)
