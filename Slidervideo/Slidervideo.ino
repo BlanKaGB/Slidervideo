@@ -150,7 +150,7 @@ void changePasDelta(long value)
     sauvegarde.save();
 }
 
-void vitesse(long value)
+void changevitesseDelta(long value)
 {
     vitesseDelta = value;
     sauvegarde.setvitesseDelta(vitesseDelta);
@@ -184,7 +184,7 @@ void loop()
             menuLCD.editValue(pasMoteurDelta, 100, 100, MAX_PAS, "Pas delta :", changePasDelta);
             break;
         case MENU_CHANGER_VITESSE:
-            menuLCD.editValue(vitesseDelta, 100, 100, vitesse, "Vitesse :", changevitesseDelta);
+            menuLCD.editValue(vitesseDelta, 100, 100, vitesseDelta, "Vitesse :", changevitesseDelta);
             break;
         }
     } else if (digitalRead(FDC_HOME_PIN) == FDC_ACTIVE && moteurStatut == MoteurStatutArriere) {
