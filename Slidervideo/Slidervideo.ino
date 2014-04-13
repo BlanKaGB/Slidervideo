@@ -74,7 +74,7 @@ void setup()
     vitesse = sauvegarde.vitesse();
     vitesseDelta = sauvegarde.vitesseDelta();
     
-    Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
+    Moteur1.init(1000,200,1,MOTOR_MODE_HALFSTEP); // moteur 200 pas/tour
     
     
     pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
