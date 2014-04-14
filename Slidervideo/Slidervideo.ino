@@ -28,11 +28,11 @@ typedef enum {
     MoteurStatutArriere,
 } MoteurStatut;
 
-#define FDC_HOME_PIN    13
-#define FDC_END_PIN     12
-#define FDC_ACTIVE      HIGH
-#define MAX_PAS         0x7FFFFFFF
-#define MAX_VITESSE     3000     // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
+#define FDC_HOME_PIN    13            // déclaration input switch home
+#define FDC_END_PIN     12            // déclaration input switch fin de course
+#define FDC_ACTIVE      HIGH          // on declare les fins de course NF
+#define MAX_PAS         0x7FFFFFFF    // on declare la valeur MAX de pas (utilisé pour nombre de pas maximun)
+#define MAX_VITESSE     3000          // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
 // Ajouter une valeur MIN_VITESSE
 
 #define MENU_AVANCER                  1
