@@ -57,13 +57,14 @@ void MenuLCD::init(void)
     _secondLine[0] = 0;
 }
 
-int8_t MenuLCD::getKey(void)
+int8_t MenuLCD::getKey(unsigned char *repeatCoef)
 {
     int8_t key;
 
     key = _deuligne.get_key();
     if ((_lastKey == -1 && key != -1) || (_lastKey != -1 && key == -1)) {
         _lastKey = key;
+        _lastKeyTime = millis();
     } else {
         key = -1;
     }
@@ -73,7 +74,7 @@ int8_t MenuLCD::getKey(void)
 unsigned int MenuLCD::selectedMenuIdentifer(void)
 {
     unsigned int result = 0;
-    int8_t key = this->getKey();
+    int8_t key = this->getKey(NULL);
     
     if (_editedValueCallback) {
         switch (key) {

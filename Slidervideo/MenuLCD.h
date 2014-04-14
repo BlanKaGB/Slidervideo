@@ -10,7 +10,7 @@ class MenuLCD
 public:
     MenuLCD(void);
     void init(void);
-    int8_t getKey(void);
+    int8_t getKey(unsigned char *repeatCoef);
     void displayMessage(const char *line1, const char *line2 = NULL, unsigned int delay = 0, boolean shouldClearScreen = true);
     void loop(void);
     void clear(void);
@@ -30,6 +30,7 @@ private:
     unsigned long        _messageTime;
     unsigned long        _messageDelay;
     int8_t               _lastKey;
+    unsigned long        _lastKeyTime;
     char                 _firstLine[LINE_SIZE + 1];
     char                 _secondLine[LINE_SIZE + 1];
     MenuLCDMenuItem      *_mainMenuItem;
