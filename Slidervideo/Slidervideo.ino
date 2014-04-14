@@ -32,8 +32,8 @@ typedef enum {
 #define FDC_END_PIN     12            // déclaration input switch fin de course
 #define FDC_ACTIVE      HIGH          // on declare les fins de course NF
 #define MAX_PAS         0x7FFFFFFF    // on declare la valeur MAX de pas (utilisé pour nombre de pas maximun)
-#define MAX_VITESSE     3500          // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
-#define MIN_VITESSE     500           // MIN_VITESSE
+#define MAX_VITESSE     1600          // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
+#define MIN_VITESSE     1150           // MIN_VITESSE
 
 #define MENU_AVANCER                  1
 #define MENU_RECULER                  2
@@ -74,7 +74,7 @@ void setup()
     vitesse = sauvegarde.vitesse();
     vitesseDelta = sauvegarde.vitesseDelta();
     
-    Moteur1.init(2000,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
+    Moteur1.init(1600,200,1,MOTOR_MODE_FULLSTEP); // moteur 200 pas/tour
     
     
     pinMode(FDC_HOME_PIN, INPUT_PULLUP); // declare la pin digital FDC_HOME_PIN en entree
@@ -221,7 +221,7 @@ void loop()
         menuLCD.displayMessage("Fin de course", NULL, 1000);
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
-    } else if (menuLCD.getKey(NULL) == 4) {
+    } else if (menuLCD.getKey() == 4) {
         Serial.println("Stop");
         menuLCD.clear();
         menuLCD.displayMessage("Stop", NULL, 1000);
