@@ -33,7 +33,7 @@ typedef enum {
 #define FDC_ACTIVE      HIGH          // on declare les fins de course NF
 #define MAX_PAS         0x7FFFFFFF    // on declare la valeur MAX de pas (utilisé pour nombre de pas maximun)
 #define MAX_VITESSE     3000          // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
-// Ajouter une valeur MIN_VITESSE
+#define MAX_VITESSE     600          // MIN_VITESSE
 
 #define MENU_AVANCER                  1
 #define MENU_RECULER                  2
@@ -201,7 +201,7 @@ void loop()
             menuLCD.editValue(pasMoteurDelta, 100, 100, MAX_PAS, "Pas delta :", changePasDelta);
             break;
         case MENU_CHANGER_VITESSE:
-            menuLCD.editValue(vitesse, vitesseDelta, vitesseDelta, MAX_VITESSE, "Vitesse :", changevitesse);
+            menuLCD.editValue(vitesse, vitesseDelta, MIN_VITESSE, MAX_VITESSE, "Vitesse :", changevitesse);
             break;
         case MENU_CHANGER_VITESSE_DELTA:
             menuLCD.editValue(vitesseDelta, 50, 50, MAX_VITESSE, "Vitesse delta :", changevitesseDelta);
