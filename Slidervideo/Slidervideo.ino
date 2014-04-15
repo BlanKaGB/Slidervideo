@@ -118,9 +118,9 @@ void deplaceMoteur(uint32_t pas, unsigned int vitesse, boolean avance)
         Serial.print("Debut de course : butee ");
         Serial.println(FDC_HOME_PIN);
     } else {
+        Moteur1.setDelay(vitesse);
         if (avance) {
             Moteur1.back(pas);
-            Moteur1.setDelay(vitesse); 
             moteurStatut = MoteurStatutAvant;
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Avance : MAX");
@@ -129,7 +129,6 @@ void deplaceMoteur(uint32_t pas, unsigned int vitesse, boolean avance)
             }
         } else {
             Moteur1.forward(pas);
-            Moteur1.setDelay(vitesse);
             moteurStatut = MoteurStatutArriere;
             if (pas == MAX_PAS) {
                 sprintf(buffer, "Arriere : MAX");
