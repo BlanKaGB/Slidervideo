@@ -32,8 +32,8 @@ typedef enum {
 #define FDC_END_PIN     12            // déclaration input switch fin de course
 #define FDC_ACTIVE      HIGH          // on declare les fins de course NF
 #define MAX_PAS         0x7FFFFFFF    // on declare la valeur MAX de pas (utilisé pour nombre de pas maximun)
-#define MAX_VITESSE     1600          // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
-#define MIN_VITESSE     1200           // MIN_VITESSE
+#define MAX_VITESSE     1800          // Changer la valeur MAX_VITESSE (par la vitesse maxi du moteur) 
+#define MIN_VITESSE     800           // MIN_VITESSE
 
 #define MENU_AVANCER                  1
 #define MENU_RECULER                  2
