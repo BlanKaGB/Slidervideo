@@ -1,7 +1,9 @@
 #include "MenuLCD.h"
 
-#define EMPTY_LINE "                "
+#define EMPTY_LINE            "                "
 #define NUMBER_OF_LINE        2
+#define KEYREPEAT_TIME1       1000
+#define KEYREPEAT_TIME2       500
 
 typedef struct __MenuLCDMenuItem {
     unsigned int identifier;
@@ -63,9 +65,28 @@ int8_t MenuLCD::getKey(unsigned char *repeatCoef)
 
     key = _deuligne.get_key();
     if ((_lastKey == -1 && key != -1) || (_lastKey != -1 && key == -1)) {
+        // We catch a new key
         _lastKey = key;
         _lastKeyTime = millis();
+        _keyRepeatCoef = 1;
+    } else if (_lastKey == key && key != -1) {
+        // The key is still pressed, let's see if we do "repeat"
+        
+        long myDelay = millis() - _lastKeyTime;
+        
+        if (myDelay > KEYREPEAT_TIME1 && _keyRepeatCoef == 1) {
+            // we waited long enough to do one key repeat
+            _keyRepeatCoef = 2;
+        } else if (myDelay > KEYREPEAT_TIME2) {
+            // we waited long enough to do one key repeat
+            _keyRepeatCoef += 1;
+        } else {
+            // no key repeat yet
+            key = -1;
+        }
     } else {
+        // still a key pressed but it is a different one, so just forget about it
+        // there is a bug in the device when releasing the key
         key = -1;
     }
     return key;

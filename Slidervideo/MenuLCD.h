@@ -31,6 +31,7 @@ private:
     unsigned long        _messageDelay;
     int8_t               _lastKey;
     unsigned long        _lastKeyTime;
+    unsigned char        _keyRepeatCoef;
     char                 _firstLine[LINE_SIZE + 1];
     char                 _secondLine[LINE_SIZE + 1];
     MenuLCDMenuItem      *_mainMenuItem;
