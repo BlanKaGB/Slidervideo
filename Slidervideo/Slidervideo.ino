@@ -90,7 +90,7 @@ void setup()
     menuItem = menuLCD.addSubMenuItem(mainMenu, "PARAMETRES", 0);
     menuLCD.addSubMenuItem(menuItem, "CHANGE PAS...", MENU_CHANGER_PAS);
     menuLCD.addSubMenuItem(menuItem, "CHANGE DELTA...", MENU_CHANGER_PAS_DELTA);
-    menuLCD.addSubMenuItem(menuItem, "VITESSE ...", MENU_CHANGER_VITESSE);
+    menuLCD.addSubMenuItem(menuItem, "VITESSE...", MENU_CHANGER_VITESSE);
     menuLCD.addSubMenuItem(menuItem, "VITESSE DELTA...", MENU_CHANGER_VITESSE_DELTA);
 
     Serial.print(FDC_HOME_PIN);
