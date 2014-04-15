@@ -102,10 +102,10 @@ void setup()
     
     // retour en arriere avec le nombre de pas max possible
     // pour atteindre le debut de course
-    deplaceMoteur(MAX_PAS, false);
+    deplaceMoteur(MAX_PAS, MIN_VITESSE, false);
 }
 
-void deplaceMoteur(uint32_t pas, boolean avance)
+void deplaceMoteur(uint32_t pas, unsigned int vitesse, boolean avance)
 {
     char buffer[32];
 
@@ -183,16 +183,16 @@ void loop()
         
         switch(menuLCD.selectedMenuIdentifer()) {
         case MENU_AVANCER:
-            deplaceMoteur(pasMoteur, true);
+            deplaceMoteur(pasMoteur, vitesse, true);
             break;
         case MENU_RECULER:
-            deplaceMoteur(pasMoteur, false);
+            deplaceMoteur(pasMoteur, vitesse, false);
             break;
         case MENU_DEBUT:
-            deplaceMoteur(MAX_PAS, false);
+            deplaceMoteur(MAX_PAS, MIN_VITESSE, false);
             break;
         case MENU_FIN:
-            deplaceMoteur(MAX_PAS, true);
+            deplaceMoteur(MAX_PAS, MIN_VITESSE, true);
             break;
         case MENU_CHANGER_PAS:
             menuLCD.editValue(pasMoteur, pasMoteurDelta, pasMoteurDelta, MAX_PAS, "Pas :", changePas);
