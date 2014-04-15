@@ -221,7 +221,7 @@ void loop()
         menuLCD.displayMessage("Fin de course", NULL, 1000);
         Moteur1.stop();
         moteurStatut = MoteurStatutArret;
-    } else if (menuLCD.getKey() == 4) {
+    } else if (menuLCD.getKey(NULL) == 4) {
         Serial.println("Stop");
         menuLCD.clear();
         menuLCD.displayMessage("Stop", NULL, 1000);
