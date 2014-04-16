@@ -19,7 +19,7 @@ void setup()
 }
 
 unsigned long lastStep = 0;
-int currentDirection = 0;
+int currentDirection = 1;
 
 void doStep()
 {
